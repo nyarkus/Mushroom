@@ -17,12 +17,12 @@ public class Cap : ICell
     public Action? Do(Position position)
     {
         
-        if (Energy > 0.0001f)
-            Energy -= 0.0001f;
+        if (Energy > 0.00005f)
+            Energy -= 0.00005f;
         else
             dies++;
-        if (Water > 0.001f)
-            Water -= 0.001f;
+        if (Water > 0.0005f)
+            Water -= 0.0005f;
         else
             dies++;
 
@@ -32,6 +32,12 @@ public class Cap : ICell
             Water -= 0.1f;
             dies--;
         }
+
+        if (dies > 20)
+            return new Action(() =>
+            {
+                Grid.Set(position, Air.Instance);
+            });
         
         var directions = new[] { Direction.Up, Direction.Left, Direction.Right };
         foreach (var dir in directions)
@@ -133,18 +139,6 @@ public class Cap : ICell
 
     public string GetColor(Position position)
     {
-        if (Grid.GetNeighbor(position, Direction.Down) is Air && Grid.GetNeighbor(position, Direction.Left) is not Air && Grid.GetNeighbor(position, Direction.Right) is not Air)
-        {
-            byte MinRGB = 219;
-            byte MaxRGB = 109;
-            
-            byte Result = (byte)Math.Clamp(Math.Round(100f / _targetSporeTicks * _sporeTicks), MaxRGB, MinRGB);
-
-            return $"#{Result:X2}{Result:X2}{Result:X2}";
-        }
-        if(Grid.GetNeighbor(position, Direction.Up) is Stalk stalk)
-            return stalk.GetColor(new Position(position.X, position.Y + 1));
-        
         return "#4f3b1a";
     }
 

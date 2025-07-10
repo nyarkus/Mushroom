@@ -67,11 +67,11 @@ public class Mycelium : ICell
         }
 
         if (Energy > 0)
-            Energy -= 0.0001f;
+            Energy -= 0.0005f;
         else
             dies++;
         if (Water > 0)
-            Water -= 0.0001f;
+            Water -= 0.0008f;
         else
             dies++;
 
