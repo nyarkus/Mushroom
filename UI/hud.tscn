@@ -29,9 +29,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-current_tab = 0
+current_tab = 1
 
 [node name="Simulation" type="TabBar" parent="VBoxContainer/Panel/TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -65,9 +66,19 @@ max_value = 120.0
 value = 5.0
 
 [node name="Create" type="TabBar" parent="VBoxContainer/Panel/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer/Panel/TabContainer/Create"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ItemList" type="ItemList" parent="VBoxContainer/Panel/TabContainer/Create/HSplitContainer"]
+layout_mode = 2
+item_count = 1
+item_0/text = "Water"
 
 [connection signal="toggled" from="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer/Weather" to="." method="OnWeatherToggled"]
 [connection signal="value_changed" from="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer/SimulationFPS" to="." method="SimulationFPSChanged"]
