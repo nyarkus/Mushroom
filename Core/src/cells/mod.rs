@@ -1,30 +1,24 @@
 pub mod air;
-mod dirt;
+pub mod dirt;
 
 use crate::data::Position;
+use std::any::Any;
+use std::sync::Arc;
 
-pub type Action = Box<dyn FnOnce()>;
+pub type Action = Box<dyn FnOnce() + Send + Sync>;
 
-pub trait Cell: DynClone + Send + Sync {
-    fn do_action(&self, position: Position) -> Action;
+pub trait AsAny: 'static {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl<T: 'static> AsAny for T {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+pub trait Cell: Send + Sync + AsAny {
+    fn do_action(&self, position: Position) -> Option<Action>;
     fn get_color(&self, position: Position) -> String;
-}
-
-pub trait DynClone {
-    fn clone_box(&self) -> Box<dyn Cell>;
-}
-
-impl<T> DynClone for T
-where
-    T: 'static + Cell + Clone,
-{
-    fn clone_box(&self) -> Box<dyn Cell> {
-        Box::new(self.clone())
-    }
-}
-
-impl Clone for Box<dyn Cell> {
-    fn clone(&self) -> Box<dyn Cell> {
-        self.clone_box()
-    }
+    fn clone_cell(&self) -> Arc<dyn Cell>;
 }
