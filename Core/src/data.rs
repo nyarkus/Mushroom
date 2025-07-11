@@ -1,3 +1,4 @@
+use strum_macros::EnumIter;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Position {
     pub x: i32,
@@ -16,7 +17,7 @@ pub struct Size {
     pub y: i32,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, EnumIter)]
 pub enum Direction {
     Up,
     Down,

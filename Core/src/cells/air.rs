@@ -15,8 +15,8 @@ impl Cell for Air {
         String::from("#000000")
     }
     fn clone_cell(&self) -> Arc<(dyn cells::Cell + 'static)> {
-        let new_dirt = Air {
+        let new_air = Air {
         };
-        Arc::new(new_dirt)
+        Arc::new(new_air)
     }
 }
