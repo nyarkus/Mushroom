@@ -2,6 +2,10 @@ pub mod air;
 pub mod dirt;
 pub mod water;
 pub mod sand;
+mod mycelium;
+mod stalk;
+mod cap;
+mod spore;
 
 use crate::data::Position;
 use std::any::Any;
