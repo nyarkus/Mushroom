@@ -1,4 +1,4 @@
-use lazy_static::lazy_static;
+use easy_color::{Hex, IntoRGB, RGB};
 use crate::cells::dirt::Dirt;
 use crate::cells::air::Air;
 use strum::IntoEnumIterator;
@@ -104,7 +104,21 @@ impl Cell for Water {
     }
 
     fn get_color(&self, _position: Position) -> String {
-        String::from("#000000")
+        let mut depth = 0;
+        let mut currentPos = Position::new(_position.x, _position.y + 1);
+
+        while grid::get(currentPos).as_any().is::<Water>() && depth < 10 {
+            depth += 1;
+            currentPos = Position::new(currentPos.x, currentPos.y + 1);
+        }
+        let baseColor: Hex = "#55a8e8".try_into().unwrap();
+        let mut rgb: RGB = baseColor.into();
+
+        rgb.set_red((rgb.red() - depth * 15).max(0));
+        rgb.set_green((rgb.green() - depth * 15).max(0));
+        rgb.set_blue((rgb.blue() - depth * 10).max(0));
+
+        Hex::from(rgb).to_string()
     }
     fn clone_cell(&self) -> Arc<(dyn cells::Cell + 'static)> {
         let new_water = Water {
