@@ -1,6 +1,7 @@
 pub mod air;
 pub mod dirt;
 pub mod water;
+pub mod sand;
 
 use crate::data::Position;
 use std::any::Any;
