@@ -7,7 +7,7 @@ use crate::data::Position;
 pub struct Air;
 
 impl Cell for Air {
-    fn do_action(&self, position: Position) -> Option<Action> {
+    fn do_action(&self, _position: Position) -> Option<Action> {
         Some(Box::new(|| {}))
     }
 

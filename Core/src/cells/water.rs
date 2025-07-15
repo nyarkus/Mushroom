@@ -1,4 +1,4 @@
-use easy_color::{Hex, IntoRGB, RGB};
+use easy_color::{Hex, RGB};
 use crate::cells::dirt::Dirt;
 use crate::cells::air::Air;
 use strum::IntoEnumIterator;
@@ -27,17 +27,17 @@ impl Water {
 
 impl Cell for Water {
     fn do_action(&self, position: Position) -> Option<Action> {
-        let mut waterCells = 0;
-        let mut isAir = false;
+        let mut water_cells = 0;
+        let mut is_air = false;
 
         for dir in Direction::iter() {
 
             if let Some(neighbor) = grid::get_neighbor(position, dir) {
                 if neighbor.as_any().is::<Water>() {
-                    waterCells += 1;
+                    water_cells += 1;
                 }
                 else if neighbor.as_any().is::<Air>() {
-                    isAir = true;
+                    is_air = true;
                 }
                 else if neighbor.as_any().is::<Dirt>() {
                     let cloned_neighbor = neighbor.clone();
@@ -49,7 +49,7 @@ impl Cell for Water {
                                     let mut dampness = dirt.dampness.lock().unwrap();
 
                                     let value = dampness.clone();
-                                    *dampness = (value + 0.3);
+                                    *dampness = value + 0.3;
                                 }
                             }));
                         }
@@ -59,7 +59,7 @@ impl Cell for Water {
         }
 
         let mut life_time = self.life_time.lock().unwrap();
-        if isAir && waterCells < 3 {
+        if is_air && water_cells < 3 {
             *life_time = *life_time + 1;
         }
 
@@ -105,14 +105,14 @@ impl Cell for Water {
 
     fn get_color(&self, _position: Position) -> String {
         let mut depth = 0;
-        let mut currentPos = Position::new(_position.x, _position.y + 1);
+        let mut current_pos = Position::new(_position.x, _position.y + 1);
 
-        while grid::get(currentPos).as_any().is::<Water>() && depth < 10 {
+        while grid::get(current_pos).as_any().is::<Water>() && depth < 10 {
             depth += 1;
-            currentPos = Position::new(currentPos.x, currentPos.y + 1);
+            current_pos = Position::new(current_pos.x, current_pos.y + 1);
         }
-        let baseColor: Hex = "#55a8e8".try_into().unwrap();
-        let mut rgb: RGB = baseColor.into();
+        let base_color: Hex = "#55a8e8".try_into().unwrap();
+        let mut rgb: RGB = base_color.into();
 
         rgb.set_red((rgb.red() - depth * 15).max(0));
         rgb.set_green((rgb.green() - depth * 15).max(0));

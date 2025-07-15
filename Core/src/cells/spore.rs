@@ -40,7 +40,6 @@ impl Cell for Spore {
         let mut ticks_on_air = self.ticks_on_air.lock().unwrap();
         let mut air_ticks = self.air_ticks.lock().unwrap();
         let mut direction = self.direction.lock().unwrap();
-        let mut rng = self.rng.lock().unwrap();
 
         let down_pos = position.get_neighbor(Direction::Down);
         if grid::get(down_pos).unwrap().as_any().is::<Dirt>() {
