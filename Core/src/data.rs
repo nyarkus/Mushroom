@@ -1,3 +1,4 @@
+use easy_color::{Hex, IntoRGB};
 use strum_macros::EnumIter;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Position {
@@ -32,6 +33,12 @@ pub struct Size {
     pub y: i32,
 }
 
+impl Size {
+    pub fn new(x: i32, y: i32) -> Size {
+        Size { x, y }
+    }
+}
+
 #[derive(Debug, Copy, Clone, EnumIter)]
 #[derive(PartialEq)]
 pub enum Direction {
@@ -50,5 +57,39 @@ impl Direction {
             3 => Direction::Right,
             _ => panic!("Invalid direction: {}", value),
         }
+    }
+}
+
+#[repr(i32)]
+pub enum Cell {
+    Air = 0,
+    Dirt = 1,
+    Water = 2,
+    Sand = 3,
+    Mycelium = 4,
+    Stalk = 5,
+    Cap = 6,
+    Spore = 7,
+}
+
+#[repr(C)]
+pub struct CellRenderData {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+impl CellRenderData {
+    pub fn new(hex: String) -> Self {
+        let str = hex.as_str();
+        let hex: Hex = str.try_into().unwrap();
+        let rgb = hex.to_rgb();
+
+        CellRenderData {
+            r: rgb.red(),
+            g: rgb.green(),
+            b: rgb.blue(),
+        }
+
     }
 }
