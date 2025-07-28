@@ -10,7 +10,7 @@ public static class Weather
     
     public static void Rain()
     {
-        var targetCount = rand.Next(4, Grid.Size.Y / 2);
+        var targetCount = rand.Next(4, Grid.Size.Y / 4);
 
         HashSet<int> X = new();
 

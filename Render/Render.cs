@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Godot;
 using Mushroom;
 using Mushroom.Data;
@@ -24,25 +26,36 @@ public partial class Render : Node2D
 		{
 			quadMesh.Size = new Vector2(CellSize, CellSize);
 		}
+		
+		CellSize = 8f;
+		var windowSize = GetWindow().Size;
+		var gridSize = Grid.Size;
+					
+		multiMeshInstance.Position = new Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
 	}
 	
 	public void RenderFrame()
 	{
 		for (int y = 0; y < Grid.Size.Y; y++)
 		{
-			for (int x = 0; x < Grid.Size.X; x++)
+			ConcurrentBag<(int index, Transform2D transform, Color color)> temp = new();
+			Parallel.For(0, Grid.Size.X, (x, state) =>
 			{
 				int index = y * Grid.Size.X + x;
 				
 				var transform = new Transform2D(0, new Vector2(x * CellSize, y * CellSize));
-				multiMesh.SetInstanceTransform2D(index, transform);
 
 				Color cellColor;
 				var cell = Grid.Get(x, y);
 
 				cellColor = Color.FromString(cell.GetColor(new Position(x,y)), Colors.Magenta); 
-				
-				multiMesh.SetInstanceColor(index, cellColor);
+				temp.Add((index, transform, cellColor));
+			});
+
+			foreach (var cell in temp)
+			{
+				multiMesh.SetInstanceTransform2D(cell.index, cell.transform);
+				multiMesh.SetInstanceColor(cell.index, cell.color);
 			}
 		}
 	}
@@ -58,7 +71,10 @@ public partial class Render : Node2D
 				if (mouseButtonEvent.IsDoubleClick())
 				{
 					CellSize = 8f;
-					multiMeshInstance.Position = new Vector2(0, 0);
+					var windowSize = GetWindow().Size;
+					var gridSize = Grid.Size;
+					
+					multiMeshInstance.Position = new Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
 				}
 			}
 				

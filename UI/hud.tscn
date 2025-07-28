@@ -1,0 +1,84 @@
+[gd_scene load_steps=2 format=3 uid="uid://by3ny6m78nxtd"]
+
+[ext_resource type="Script" uid="uid://k5iq43muue44" path="res://UI/Hud.cs" id="1_ne75i"]
+
+[node name="Hud" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ne75i")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 2
+
+[node name="Panel" type="Panel" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+current_tab = 1
+
+[node name="Simulation" type="TabBar" parent="VBoxContainer/Panel/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Panel/TabContainer/Simulation"]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 119.0
+
+[node name="Info" type="RichTextLabel" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Tick:"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer"]
+layout_mode = 2
+
+[node name="Weather" type="CheckButton" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Enable weather"
+
+[node name="FPS" type="Label" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Simulation FPS: 5"
+horizontal_alignment = 1
+
+[node name="SimulationFPS" type="HSlider" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+min_value = 1.0
+max_value = 120.0
+value = 5.0
+
+[node name="Create" type="TabBar" parent="VBoxContainer/Panel/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer/Panel/TabContainer/Create"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ItemList" type="ItemList" parent="VBoxContainer/Panel/TabContainer/Create/HSplitContainer"]
+layout_mode = 2
+item_count = 1
+item_0/text = "Water"
+
+[connection signal="toggled" from="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer/Weather" to="." method="OnWeatherToggled"]
+[connection signal="value_changed" from="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer/SimulationFPS" to="." method="SimulationFPSChanged"]

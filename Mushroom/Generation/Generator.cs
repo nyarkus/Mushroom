@@ -19,7 +19,7 @@ public static class Generator
         
         var noise = new PerlinNoise(seed);
         
-        float frequency = 0.05f; // Smooth
+        float frequency = 0.03f; // Smooth
         float amplitude = 5f; // Height
 
         int baseGroundLevel = (groundLevel == 0) ? position.Y / 2 : groundLevel;
@@ -62,7 +62,7 @@ public static class Generator
                     }
                     else
                     {
-                        float dampness = Math.Clamp(0.5f + (y - currentGroundLevel) * 0.1f, 0.5f, 1f);
+                        float dampness = Math.Clamp(0.1f + (y - currentGroundLevel) * 0.1f, 0.1f, 1f);
                         float nutrients = Math.Clamp(1f - (y - currentGroundLevel) * 0.05f, 0.5f, 1f);
                         Grid.Set(x, y, new Dirt() { Dampness = dampness, Nutrients = nutrients });
                     }

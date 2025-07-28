@@ -79,7 +79,7 @@ public class Stalk : ICell
             }
             if (up is Air && Energy > 0.5f && Water > 0.5f)
             {
-                var capSize = _rand.Next(2, 5);
+                var capSize = _rand.Next(3, 6);
                 return new Action(() =>
                 {
                     Water -= 0.4f;

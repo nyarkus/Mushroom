@@ -11,7 +11,6 @@ public partial class Main : Node
 	[Export] public int Width = 240;
 	[Export] public int Height = 40;
 	[Export] public int GroundLevel = 0;
-	[Export] public double SimulationFPS = 5;
 
 	public long Tick = 0;
 	public long WeatherTick = 0;
@@ -23,28 +22,34 @@ public partial class Main : Node
 	private Random _rand = new();
 	
 	private Render _render;
+	private Hud _hud;
 	public override void _Ready()
 	{
 		GD.Print("Setup render...");
-		targetTimer = 1 / SimulationFPS;
 		_render = GetNode<Render>("Render");
 		_render.Initialize();
+		
+		GD.Print("Setup hud...");
+		_hud = GetNode<Hud>("Hud");
 	}
 
+	private double oldTimer = 0;
 	private double timer = 0;
 	private double targetTimer;
 	public override void _Process(double delta)
 	{
+		targetTimer = 1 / _hud.SimulationFPS;
 		timer += delta;
 		if (timer < targetTimer)
 			return;
+		oldTimer = timer;
 		timer = 0;
 		
 		_stopwatch.Restart();
 		
 		Tick++;
 		Logic.Calculate();
-		if (Tick >= WeatherTick)
+		if (_hud.WeatherEnabled && Tick >= WeatherTick)
 		{
 			if (Tick % 6 == 0)
 			{
@@ -64,6 +69,11 @@ public partial class Main : Node
 		
 		_render.Call("RenderFrame");
 		_renderTime = _stopwatch.Elapsed;
-		GD.Print($"Logic Time: {_logicTime.TotalMilliseconds:F1} ms; Render Time: {_renderTime.TotalMilliseconds:F1} ms; tick: {Tick}; Next rain in {Math.Clamp(WeatherTick - Tick, 0, int.MaxValue)} ticks");
+		
+		_hud.Info.Text = $"Logic Time: {_logicTime.TotalMilliseconds:F1} ms" +
+		                 $"\nRender Time: {_renderTime.TotalMilliseconds:F1} ms" +
+		                 $"\nSimulation FPS: {1000 / (_logicTime.TotalMilliseconds + _renderTime.TotalMilliseconds + oldTimer * 1000):F0}" +
+		                 $"\nTick: {Tick}" +
+		                 $"\nNext rain in " + (_hud.WeatherEnabled ? Math.Clamp(WeatherTick - Tick, 0, int.MaxValue) : "Never") + " ticks";
 	}
 }

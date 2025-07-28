@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # NuGet
+  - package-ecosystem: "nuget"
+    directory: "/"
+    target-branch: dev
+    schedule:
+      interval: "daily"
+    groups:
+      tests:
+        patterns:
+          - 'xunit*'
+          - 'coverlet.collector*'
+          - 'Microsoft.NET.Test.Sdk'
+      serializers:
+        patterns:
+          - 'Newtonsoft.Json'
+          - 'Yaml*'
+          - 'Toml*'
+          - 'Proto*'
+          - 'Flat*'
+  # Cargo
+  - package-ecosystem: "cargo"
+    directory: "Core/"
+    target-branch: dev
+    schedule:
+      interval: "weekly"
