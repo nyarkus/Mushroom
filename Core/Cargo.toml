@@ -8,7 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 lazy_static = "1.5.0"
-rand = "0.9.1"
+rand = "0.9.2"
 strum = "0.27.1"
 strum_macros = "0.27.1"
 easy_color = "0.1.13"
