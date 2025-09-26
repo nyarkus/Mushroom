@@ -5,3 +5,6 @@ Mushroom.sln.DotSettings.user
 
 # Rider
 .idea/
+
+# Build directory
+BUILD/
