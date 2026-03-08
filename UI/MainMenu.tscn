@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bbhy48k4w7bk4"]
+[gd_scene format=3 uid="uid://bbhy48k4w7bk4"]
 
 [ext_resource type="Script" uid="uid://c70ou2mjfdmlq" path="res://UI/MainMenu.cs" id="1_uahxu"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=1364106844]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_uahxu")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1722232310]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,11 +19,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="Panel" parent="CenterContainer"]
+[node name="Panel" type="Panel" parent="CenterContainer" unique_id=2000062424]
 custom_minimum_size = Vector2(300, 400)
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/Panel" unique_id=1981930789]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,21 +31,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="Label" type="Label" parent="CenterContainer/Panel/VBoxContainer" unique_id=1493953316]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "World Creation"
 horizontal_alignment = 1
 
-[node name="Control" type="Control" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="Control" type="Control" parent="CenterContainer/Panel/VBoxContainer" unique_id=1636426415]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="Label2" type="Label" parent="CenterContainer/Panel/VBoxContainer" unique_id=1185833614]
 layout_mode = 2
 text = "World Size"
 
-[node name="WorldSize" type="ItemList" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="WorldSize" type="ItemList" parent="CenterContainer/Panel/VBoxContainer" unique_id=1777767883]
 layout_mode = 2
 auto_height = true
 item_count = 6
@@ -56,38 +56,38 @@ item_3/text = "Very Large"
 item_4/text = "Colossal"
 item_5/text = "Titanic"
 
-[node name="Label3" type="Label" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="Label3" type="Label" parent="CenterContainer/Panel/VBoxContainer" unique_id=647344967]
 layout_mode = 2
 text = "Seed"
 
-[node name="Seed" type="SpinBox" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="Seed" type="SpinBox" parent="CenterContainer/Panel/VBoxContainer" unique_id=887762423]
 layout_mode = 2
-min_value = -2.14748e+09
-max_value = 2.14748e+09
-value = 2.14748e+09
+min_value = -2147480000.0
+max_value = 2147480000.0
+value = 2147480000.0
 
-[node name="Control2" type="Control" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="Control2" type="Control" parent="CenterContainer/Panel/VBoxContainer" unique_id=1784021334]
 custom_minimum_size = Vector2(0, 9)
 layout_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/Panel/VBoxContainer"]
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/Panel/VBoxContainer" unique_id=580698508]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="CenterContainer/Panel/VBoxContainer/CenterContainer"]
+[node name="Button" type="Button" parent="CenterContainer/Panel/VBoxContainer/CenterContainer" unique_id=368087462]
 layout_mode = 2
 text = "Generate!"
 
-[node name="Loading" type="VBoxContainer" parent="CenterContainer"]
+[node name="Loading" type="VBoxContainer" parent="CenterContainer" unique_id=816816324]
 visible = false
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CenterContainer/Loading"]
+[node name="Label" type="Label" parent="CenterContainer/Loading" unique_id=212196647]
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "Loading..."
 horizontal_alignment = 1
 
-[node name="ProgressBar" type="ProgressBar" parent="CenterContainer/Loading"]
+[node name="ProgressBar" type="ProgressBar" parent="CenterContainer/Loading" unique_id=861370505]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 
