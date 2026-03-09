@@ -116,6 +116,14 @@ jobs:
         with:
           name: linux
           path: build/linux
+      - name: Set Channel Suffix
+        id: channel_info
+        run: |
+          if [ "${{ github.ref_name }}" = "master" ]; then
+            echo "SUFFIX=stable" >> $GITHUB_ENV
+          else
+            echo "SUFFIX=indev" >> $GITHUB_ENV
+          fi
       - name: Deploy to Itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
