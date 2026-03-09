@@ -103,18 +103,10 @@ jobs:
     steps:
       - name: Setup butler
         run: |
-          # Source: https://github.com/abarichello/godot-ci/blob/master/getbutler.sh
-          mkdir -p /opt/butler/bin
-          cd /opt/butler/bin
-
-          wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
-
-          # GNU unzip tends to not set the executable bit even though it's set in the .zip
-          chmod +x butler
-
-          echo "/opt/butler/bin" >> $GITHUB_PATH
-          cd ~
+          wget https://raw.githubusercontent.com/abarichello/godot-ci/refs/heads/master/getbutler.sh
+          chmod +x getbutler.sh
+          ./getbutler.sh
+          echo "$(pwd)" >> $GITHUB_PATH
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
