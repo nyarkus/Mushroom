@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://op7fd4d4nyto"]
+[gd_scene format=3 uid="uid://op7fd4d4nyto"]
 
 [ext_resource type="Script" uid="uid://c2xln35ycj64a" path="res://Render/Render.cs" id="1_ss0vo"]
 
@@ -8,8 +8,8 @@
 use_colors = true
 mesh = SubResource("QuadMesh_1puui")
 
-[node name="Render" type="Node2D"]
+[node name="Render" type="Node2D" unique_id=587467266]
 script = ExtResource("1_ss0vo")
 
-[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
+[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="." unique_id=708042616]
 multimesh = SubResource("MultiMesh_ss0vo")
