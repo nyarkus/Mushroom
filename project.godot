@@ -19,6 +19,10 @@ config/tags=PackedStringArray("2d", "simulation")
 run/main_scene="uid://bbhy48k4w7bk4"
 config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
 
+[display]
+
+window/vsync/vsync_mode=0
+
 [dotnet]
 
 project/assembly_name="Mushroom"
