@@ -25,12 +25,15 @@ public class Dirt : ICell
 
     public Action? Do(Vector2I vector2)
     {
+        float nextDampness = Dampness;
+        float nextNutrients = Nutrients;
+        
         var pendingChanges = new List<(Dirt cell, float dampnessDelta, float nutrientDelta)>();
         
         float currentDampnessChange = 0;
         float currentNutrientChange = 0;
         
-        float excessWater = Math.Max(0, Dampness - RETENTION_CAPACITY);
+        float excessWater = Math.Max(0, nextDampness - RETENTION_CAPACITY);
         
         var directions = new[] { Direction.Up, Direction.Down, Direction.Left, Direction.Right };
         
@@ -38,13 +41,13 @@ public class Dirt : ICell
         {
             var neighborCell = Grid.GetNeighbor(vector2, dir);
             
-            if (dir == Direction.Up && neighborCell is Air && Dampness > MIN_DAMPNESS)
+            if (dir == Direction.Up && neighborCell is Air && nextDampness > MIN_DAMPNESS)
             {
                 float evapMulti = Dampness > RETENTION_CAPACITY ? 1.0f : 0.2f;
                 currentDampnessChange -= EVAPORATION_RATE * evapMulti;
                 
-                if (GD.Randi() < 0.001f) 
-                    Nutrients = Math.Clamp(Nutrients + 0.01f, 0f, 1f);
+                if (Random.Shared.NextDouble() < 0.001) 
+                    currentNutrientChange += 0.01f;
             }
             
             if (neighborCell is Dirt dirtNeighbor)
@@ -52,22 +55,20 @@ public class Dirt : ICell
                 float dampFlow = 0;
                 float nutrFlow = 0;
                 
-                if (Dampness > dirtNeighbor.Dampness)
+                if (nextDampness > dirtNeighbor.Dampness)
                 {
                     if (dir == Direction.Down)
                     {
-                        float desiredFlow = (Dampness - dirtNeighbor.Dampness) / 2 * GRAVITY_FLOW_RATE;
+                        float desiredFlow = (nextDampness - dirtNeighbor.Dampness) / 2 * GRAVITY_FLOW_RATE;
                         dampFlow = excessWater > 0 ? Math.Min(excessWater, desiredFlow) : desiredFlow / 10f;
                     }
                     else if ((dir == Direction.Left || dir == Direction.Right) && excessWater > 0)
-                    {
-                        dampFlow = Math.Min(excessWater, (Dampness - dirtNeighbor.Dampness) / 2 * HORIZONTAL_FLOW_RATE);
-                    }
+                        dampFlow = Math.Min(excessWater, (nextDampness - dirtNeighbor.Dampness) / 2 * HORIZONTAL_FLOW_RATE);
                 }
                 
-                if (Nutrients > dirtNeighbor.Nutrients)
+                if (nextNutrients > dirtNeighbor.Nutrients)
                 {
-                    nutrFlow = (Nutrients - dirtNeighbor.Nutrients) / 2 * NUTRIENT_FLOW_RATE * Math.Max(0.1f, Dampness);
+                    nutrFlow = (nextNutrients - dirtNeighbor.Nutrients) / 2 * NUTRIENT_FLOW_RATE * Math.Max(0.1f, nextDampness);
                 }
 
                 if (dampFlow > 0 || nutrFlow > 0)

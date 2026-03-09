@@ -1,7 +1,6 @@
 using Mushroom.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 
 namespace Mushroom.Ceils;
@@ -9,32 +8,28 @@ namespace Mushroom.Ceils;
 public class Worm : ICell
 {
     private Vector2I[] positions = Array.Empty<Vector2I>();
-    private Random rand = new();
     private bool canReproduce = true;
     
     public Guid WormId { get; set; } = Guid.NewGuid(); 
-    
     public ICell Underneath { get; set; } = new Air();
-    
     public bool Main { get; set; } 
     public int Age { get; set; }
     public int TargetLifeTime { get; set; } = 1000;
     
     public Action? Do(Vector2I headPos)
     {
-        Age++;
+        int nextAge = Age;
+        nextAge++;
         
         if (!Main)
         {
             if (Age >= TargetLifeTime)
-                return new Action(() =>
-                {
-                    Grid.Set(headPos, new RottingMatter());
-                });
+                return () => Grid.Set(headPos, new RottingMatter());
 
-            return null;
+            return () => Age = nextAge;
         }
-
+        
+        Vector2I[] nextPositions = positions;
         if (positions.Length > 0)
         {
             var validSegments = new List<Vector2I>();
@@ -43,20 +38,20 @@ public class Worm : ICell
                 if (Grid.Get(p) is Worm w && w.WormId == this.WormId) validSegments.Add(p);
                 else break;
             }
-            positions = validSegments.ToArray();
+            nextPositions = validSegments.ToArray();
         }
         
         if (Age >= TargetLifeTime)
-            return new Action(() =>
-            {
-                Grid.Set(headPos, new RottingMatter());
-            });
+            return () => { positions = nextPositions; Grid.Set(headPos, new RottingMatter()); };
         
         if (canReproduce && Age >= TargetLifeTime / 2)
         {
-            return new Action(() =>
+            return () =>
             {
+                Age = nextAge;
+                positions = nextPositions;
                 canReproduce = false;
+                
                 Vector2I[] potentialSpots = 
                 [
                     new Vector2I(headPos.X - 1, headPos.Y), new Vector2I(headPos.X + 1, headPos.Y), 
@@ -71,7 +66,7 @@ public class Worm : ICell
                         break;
                     }
                 }
-            });
+            };
         }
         
         var directions = new List<Vector2I>
@@ -96,7 +91,7 @@ public class Worm : ICell
                 {
                     if (otherWorm.WormId == this.WormId)
                     {
-                        if (positions.Length > 0 && target == positions[^1])
+                        if (nextPositions.Length > 0 && target == nextPositions[^1])
                         {
                             score = 0f; 
                             validMove = true;
@@ -111,7 +106,7 @@ public class Worm : ICell
                         if (target.Y < headPos.Y) score += 60f; 
                     }
                     score += dirt.Nutrients * 10f;
-                    score += rand.NextSingle() * 15f;   
+                    score += Random.Shared.NextSingle() * 15f;   
                     validMove = true;
                 }
                 else if (neighbor is RottingMatter)
@@ -143,12 +138,25 @@ public class Worm : ICell
         }
         
         if (foundMove)
-            return Move(headPos, bestMove);
+        {
+            var moveAction = Move(headPos, bestMove);
+            return () =>
+            {
+                Age = nextAge;
+                positions = nextPositions;
+                moveAction();
+            };
+        }
         
-        if (positions.Length > 0)
-            return new Action(() => ReverseDirection(headPos));
+        if (nextPositions.Length > 0)
+            return () =>
+            {
+                Age = nextAge;   
+                positions = nextPositions;
+                ReverseDirection(headPos);
+            };
         
-        return null;
+        return () => { Age = nextAge; positions = nextPositions; };
     }
     
     private Action Move(Vector2I oldHeadPos, Vector2I newHeadPos)
@@ -181,10 +189,9 @@ public class Worm : ICell
             }
             
             for (int i = tailWorms.Length - 1; i > 0; i--) 
-            {
                 if (tailWorms[i] != null && tailWorms[i - 1] != null)
                     tailWorms[i].Underneath = tailWorms[i - 1].Underneath;
-            }
+            
             if (tailWorms.Length > 0 && tailWorms[0] != null)
                 tailWorms[0].Underneath = headWorm.Underneath;
             
@@ -217,9 +224,7 @@ public class Worm : ICell
             }
             
             if (!bitingTail) 
-            {
                 Grid.Set(previousPos, cellToRestore);
-            }
         };
     }
     
@@ -239,13 +244,12 @@ public class Worm : ICell
             
             var newPositions = new List<Vector2I>();
             for (int i = positions.Length - 2; i >= 0; i--)
-            {
                 newPositions.Add(positions[i]);
-            }
+            
             newPositions.Add(currentHeadPos); 
             
             tailWorm.positions = newPositions.ToArray();
-            this.positions = Array.Empty<Vector2I>(); 
+            positions = Array.Empty<Vector2I>(); 
         }
     }
 

@@ -7,25 +7,27 @@ namespace Mushroom.Ceils;
 public class WormCocoon : ICell
 {
     private int _ticks = 0;
-    private Random _rand = new();
     public Action? Do(Vector2I vector2)
     {
-        _ticks++;
         if (_ticks >= 350)
         {
-            var length = _rand.Next(2, 5);
+            var length = Random.Shared.Next(2, 5);
             for (int i = 1; i < length; i++)
             {
                 var tailPos = new Vector2I(vector2.X - i, vector2.Y);
                 
                 if(Grid.Get(tailPos) is not Dirt)
-                    return null;
+                    return () => _ticks++;
             }
-            Grid.Set(vector2, new Dirt());
-            Worm.Spawn(vector2, length);
+
+            return () =>
+            {
+                Grid.Set(vector2, new Dirt());
+                Worm.Spawn(vector2, length);
+            };
         }
         
-        return null;
+        return () => _ticks++;
     }
 
     public Color GetColor(Vector2I vector2)

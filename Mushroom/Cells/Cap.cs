@@ -8,8 +8,7 @@ public class Cap : ICell
 {
     public float Water { get; set; } = 1f;
     public float Energy { get; set; } = 1f;
-    private int dies = 0;
-    
+    private int _dies = 0;
     private int _sporeTicks = 0;
     private const int _targetSporeTicks = 500;
     
@@ -18,37 +17,30 @@ public class Cap : ICell
 
     public Action? Do(Vector2I vector2)
     {
+        float nextEnergy = Energy;
+        float nextWater = Water;
+        int nextDies = _dies;
+        int nextSporeTicks = _sporeTicks;
+        
         if (Grid.Get(StalkVector2) is not Stalk)
         {
-            dies += 1; 
-            Energy = 0;
-            Water = 0;
+            nextDies += 1; 
+            nextEnergy = 0;
+            nextWater = 0;
         }
         
-        if (Energy >= 0.00005f)
-            Energy -= 0.00005f;
-        else
-            dies++;
-            
-        if (Water >= 0.00005f)
-            Water -= 0.00005f;
-        else
-            dies++;
+        if (nextEnergy >= 0.00005f) nextEnergy -= 0.00005f; else nextDies++;
+        if (nextWater >= 0.00005f) nextWater -= 0.00005f; else nextDies++;
         
-        if (dies > 0 && Energy > 0.02f && Water > 0.02f)
+        if (nextDies > 0 && nextEnergy > 0.02f && nextWater > 0.02f)
         {
-            Energy -= 0.01f;
-            Water -= 0.01f;
-            dies--;
+            nextEnergy -= 0.01f;
+            nextWater -= 0.01f;
+            nextDies--;
         }
         
-        if (dies > 10)
-        {
-            return new Action(() =>
-            {
-                Grid.Set(vector2, new RottingMatter() { BecomeAir = true } );
-            });
-        }
+        if (nextDies > 10)
+            return () => Grid.Set(vector2, new RottingMatter() { BecomeAir = true });
         
         var directions = new[] { Direction.Up, Direction.Left, Direction.Right };
         foreach (var dir in directions)
@@ -56,14 +48,15 @@ public class Cap : ICell
             var neighborPos = vector2.GetNeighborPosition(dir); 
             if (StalkVector2.DistanceSquaredTo(neighborPos) < MaxDistance)
             {
-                if (Grid.Get(neighborPos) is Air && Water > 0.4f && Energy > 0.4f)
+                if (Grid.Get(neighborPos) is Air && nextWater > 0.4f && nextEnergy > 0.4f)
                 {
-                    return new Action(() =>
+                    return () =>
                     {
-                        Water -= 0.2f;
-                        Energy -= 0.2f;
+                        Water = nextWater - 0.2f;
+                        Energy = nextEnergy - 0.2f;
+                        _dies = nextDies;
                         Grid.Set(neighborPos, new Cap() { StalkVector2 = StalkVector2, MaxDistance = MaxDistance });
-                    });
+                    };
                 }
             }
         }
@@ -75,65 +68,67 @@ public class Cap : ICell
         
         if (down is Air && left is not Air && right is not Air)
         {
-            if (Water > 0.2f && Energy > 0.2f)
+            if (nextWater > 0.2f && nextEnergy > 0.2f)
             {
-                Water -= 0.05f;
-                Energy -= 0.05f;
-                _sporeTicks++;
+                nextWater -= 0.05f;
+                nextEnergy -= 0.05f;
+                nextSporeTicks++;
             }
 
-            if (_sporeTicks >= _targetSporeTicks)
+            if (nextSporeTicks >= _targetSporeTicks)
             {
-                Grid.Set(vector2.X, vector2.Y + 1, new Spore());
-                _sporeTicks = 0;
+                return () =>
+                {
+                    Water = nextWater; Energy = nextEnergy; _dies = nextDies; _sporeTicks = 0;
+                    Grid.Set(vector2.X, vector2.Y + 1, new Spore());
+                };
             }
         }
         
-        var actionUp = TryGiveResource(up);
-        if (actionUp != null) return actionUp;
-
-        var actionDown = TryGiveResource(down);
-        if (actionDown != null) return actionDown;
-
-        var actionLeft = TryGiveResource(left);
-        if (actionLeft != null) return actionLeft;
+        var resourceAction = TryGiveResource(up) ?? TryGiveResource(down) ?? TryGiveResource(left) ?? TryGiveResource(right);
+        if (resourceAction != null)
+        {
+            return () => {
+                Water = nextWater; Energy = nextEnergy; _dies = nextDies; _sporeTicks = nextSporeTicks;
+                resourceAction();
+            };
+        }
         
-        var actionRight = TryGiveResource(right);
-        if (actionRight != null) return actionRight;
+        if (nextEnergy != Energy || nextWater != Water || nextDies != _dies || nextSporeTicks != _sporeTicks)
+            return () => { Water = nextWater; Energy = nextEnergy; _dies = nextDies; _sporeTicks = nextSporeTicks; };
 
         return null;
     }
     
     private Action? TryGiveResource(ICell neighbor)
     {
-        if (Energy <= 0.5f && Water <= 0.5f)
-            return null;
+        if (Energy <= 0.5f && Water <= 0.5f) return null;
         
         if (neighbor is Cap cap && (cap.Energy < 0.5f || cap.Water < 0.5f))
         {
-            float waterNeeded = 0.5f - cap.Water;
-            float energyNeeded = 0.5f - cap.Energy;
-            
-            float waterToGive = Math.Max(0, Math.Min(waterNeeded, this.Water));
-            float energyToGive = Math.Max(0, Math.Min(energyNeeded, this.Energy));
-            
-            if (waterToGive <= 0 && energyToGive <= 0) 
-                return null;
-
-            return new Action(() =>
+            return () =>
             {
-                cap.Water += waterToGive;
-                this.Water -= waterToGive;
-
-                cap.Energy += energyToGive;
-                this.Energy -= energyToGive;
-            });
+                float waterNeeded = 0.5f - cap.Water;
+                float energyNeeded = 0.5f - cap.Energy;
+                
+                float waterToGive = Math.Max(0, Math.Min(waterNeeded, this.Water));
+                float energyToGive = Math.Max(0, Math.Min(energyNeeded, this.Energy));
+                
+                if (waterToGive > 0)
+                {
+                    cap.Water += waterToGive;
+                    this.Water -= waterToGive;
+                }
+                if (energyToGive > 0)
+                {
+                    cap.Energy += energyToGive;
+                    this.Energy -= energyToGive;
+                }
+            };
         }
         return null;
     }
 
-    public Color GetColor(Vector2I vector2)
-        => new Color(0.3f, 0.23f, 0.1f);
-
+    public Color GetColor(Vector2I vector2) => new Color(0.3f, 0.23f, 0.1f);
     public char Symbol { get; } = '#';
 }

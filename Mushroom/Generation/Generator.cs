@@ -14,7 +14,7 @@ public static class Generator
     /// </summary>
     public static void Generate(Vector2I size, int groundLevel = 0, int seed = 0)
     {
-        Grid.Size = size;
+        Grid.Initialize(size);
         var rand = new Random(seed);
 
         var noise = new FastNoiseLite();

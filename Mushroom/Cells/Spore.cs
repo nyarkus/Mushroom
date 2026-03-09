@@ -10,25 +10,29 @@ public class Spore : ICell
     private int _ticksOnAir = 0;
     private int _airTicks = 0;
     private int _windDirection;
-    private Random _rand = new();
     
     public Spore()
     {
-        _windDirection = _rand.Next(0, 2) == 0 ? -1 : 1;
+        _windDirection = Random.Shared.Next(0, 2) == 0 ? -1 : 1;
     }
     
     public Action? Do(Vector2I position)
     {
+        int nextTickDirt = _ticksOnDirt;
+        int nextTickAir = _ticksOnAir;
+        int nextAirTicks = _airTicks;
+        int nextWindDir = _windDirection;
+        
         var down = Grid.GetNeighbor(position, Direction.Down);
         
         if (down is Dirt)
         {
-            _ticksOnDirt += 1;
-
+            nextTickDirt++;
             if (_ticksOnDirt > 50)
             {
                 if (Raycast.Cast(position + new Vector2I(0, -1), new Vector2I(0, -1)).IsHit)
-                    return new Action(() => Grid.Set(position, Air.Instance));
+                    return () =>
+                        Grid.Set(position, Air.Instance);
                 
                 bool isTooClose = false;
                 for (int x = -2; x <= 2; x++)
@@ -41,24 +45,25 @@ public class Spore : ICell
                 }
 
                 if (isTooClose)
-                    return new Action(() => Grid.Set(position, Air.Instance));
+                    return () =>
+                        Grid.Set(position, Air.Instance);
                 
-                return new Action(() =>
+                return () =>
                 {
                     Grid.Set(new Vector2I(position.X, position.Y + 1), new Mycelium() { Main = true });
-                    Grid.Set(position, new RottingMatter() { BecomeAir = true });
-                });
+                    Grid.Set(position, Air.Instance);
+                };
             }
         }
         else
         {
-            _ticksOnAir++;
-            if (_ticksOnAir > 200)
-                return new Action(() => Grid.Set(position, new RottingMatter() { BecomeAir = true } ));
+            nextTickAir++;
+            if (nextTickAir > 200)
+                return () => Grid.Set(position, new RottingMatter() { BecomeAir = true } );
 
-            _airTicks++;
+            nextAirTicks++;
             
-            if (_airTicks >= 3)
+            if (nextAirTicks >= 3)
             {
                 var targetPos = new Vector2I(position.X + _windDirection, position.Y + 1);
                 
@@ -67,18 +72,37 @@ public class Spore : ICell
                     return new Action(() => 
                     {
                         _airTicks = 0;
+                        _ticksOnDirt = nextTickDirt;
+                        _ticksOnAir = nextTickAir;
+                        _windDirection = nextWindDir;
+                        
                         Grid.Move(position, targetPos);
                     });
                 }
-                _windDirection *= -1; 
-                _airTicks = 0;
+                
+                nextWindDir *= -1; 
+                nextAirTicks = 0;
                 
             }
             else if (Grid.GetNeighbor(position, Direction.Down) is Air)
-                 return new Action(() => Grid.Move(position, new Vector2I(position.X, position.Y + 1)));
+                 return () =>
+                 {
+                     _ticksOnDirt = nextTickDirt;
+                     _ticksOnAir = nextTickAir;
+                     _airTicks = nextAirTicks;
+                     _windDirection = nextWindDir;
+                     
+                     Grid.Move(position, new Vector2I(position.X, position.Y + 1));
+                 };
         }
 
-        return null;
+        return () =>
+        {
+            _ticksOnDirt = nextTickDirt;
+            _ticksOnAir = nextTickAir;
+            _airTicks = nextAirTicks;
+            _windDirection = nextWindDir;
+        };
     }
 
     public Color GetColor(Vector2I position)

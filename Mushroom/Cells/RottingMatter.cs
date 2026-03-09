@@ -12,31 +12,30 @@ public class RottingMatter : ICell
     
     public Action? Do(Vector2I pos)
     {
-        _age++;
-        
         var downPos = pos + new Vector2I(0, 1);
         if (Grid.IsInBounds(downPos) && Grid.Get(downPos) is Air)
         {
+            _age++;
             BecomeAir = true;
-            return new Action(() => Grid.Move(pos, downPos));
+            return () => Grid.Move(pos, downPos);
         }
         
         if (_age > 500)
         {
             if (BecomeAir)
             {
-                return new Action(() =>
+                return () =>
                 {
                     if(Grid.Get(downPos) is Dirt dirt)
                         dirt.Nutrients = Math.Clamp(dirt.Nutrients + 0.3f, 0f, 1f);
                     Grid.Set(pos, Air.Instance);
-                });
+                };
             }
             
-            return new Action(() =>
+            return () =>
             {
                 Grid.Set(pos, new Dirt() { Dampness = 0.5f, Nutrients = 1f });
-            });
+            };
 
         }
         
@@ -50,14 +49,19 @@ public class RottingMatter : ICell
                 availableDirs.Add(pos + new Vector2I(1, 0));
 
             if (availableDirs.Count == 0)
-                return null;
+                return () => _age++;
 
-            BecomeAir = true;
             
-            return new Action(() => { Grid.Move(pos, availableDirs[GD.RandRange(0, availableDirs.Count - 1)]); });
+            
+            return () =>
+            {
+                BecomeAir = true;
+                _age++;
+                Grid.Move(pos, availableDirs[Random.Shared.Next(0, availableDirs.Count)]);
+            };
         }
 
-        return null;
+        return () => _age++;
     }
 
     public Color GetColor(Vector2I pos) => new Color(0.15f, 0.13f, 0.11f);

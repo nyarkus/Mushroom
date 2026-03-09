@@ -6,16 +6,21 @@ namespace Mushroom.Ceils;
 
 public class Sand : ICell
 {
-    public bool Wet { get; set; }
+    public bool IsWet { get; set; }
     private int _ticksInAir { get; set; }
     public Action? Do(Vector2I vector2)
     {
+        int nextTicks = _ticksInAir;
+        bool nextWet = IsWet;
+        
         var down = Grid.GetNeighbor(vector2, Direction.Down);
         if (down is Air or Water)
-            return new Action(() =>
-            {
-                Grid.Move(vector2, new Vector2I(vector2.X, vector2.Y + 1));
-            });
+            return () => 
+            { 
+                _ticksInAir = nextTicks; 
+                IsWet = nextWet; 
+                Grid.Move(vector2, new Vector2I(vector2.X, vector2.Y + 1)); 
+            };
         
         Direction[] directions = [Direction.Up, Direction.Right, Direction.Left];
 
@@ -23,22 +28,26 @@ public class Sand : ICell
         {
             var neighbor = Grid.GetNeighbor(vector2, dir);
             if(neighbor is Water)
-                Wet = true;
+                nextWet = true;
             if (neighbor is Air)
-                _ticksInAir++;
+                nextTicks++;
 
-            if (_ticksInAir >= 10)
+            if (nextTicks >= 10)
             {
-                Wet = false;
-                _ticksInAir = 0;
+                nextWet = false;
+                nextTicks = 0;
             }
         }
 
-        return null;
+        return () =>
+        {
+            _ticksInAir = nextTicks;
+            IsWet = nextWet;
+        };
     }
 
     public Color GetColor(Vector2I vector2)
-        => Wet ? new Color(0.67f, 0.68f, 0.23f) : new Color(0.86f, 0.87f, 0.3f);
+        => IsWet ? new Color(0.67f, 0.68f, 0.23f) : new Color(0.86f, 0.87f, 0.3f);
 
     public char Symbol { get; } = '#';
 }

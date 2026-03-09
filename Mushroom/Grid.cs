@@ -2,31 +2,38 @@ using System.Collections.Generic;
 using Godot;
 using Mushroom.Ceils;
 using Mushroom.Data;
-using Mushroom.Generation;
 
 namespace Mushroom;
 
 public static class Grid
 {
-    private static Dictionary<(int x, int y), ICell> _ceils = new();
+    private static ICell[] _cells;
+    public static Vector2I Size { get; private set; }
+    public static int GroundLevel { get; internal set; }
 
-    public static void Set(Vector2I vector2, ICell cell)
-        => _ceils[(vector2.X, vector2.Y)] = cell;
+    public static void Initialize(Vector2I size)
+    {
+        Size = size;
+        _cells = new ICell[size.X * size.Y];
+        for (int i = 0; i < _cells.Length; i++)
+            _cells[i] = Air.Instance;
+    }
+
+    public static void Set(Vector2I vector2, ICell cell) => Set(vector2.X, vector2.Y, cell);
+    
     public static void Set(int x, int y, ICell cell)
-        => _ceils[(x, y)] = cell;
+    {
+        if (IsInBounds(x, y))
+            _cells[y * Size.X + x] = cell;
+    }
 
-    public static ICell Get(Vector2I vector2)
-        => Get(vector2.X, vector2.Y);
+    public static ICell Get(Vector2I vector2) => Get(vector2.X, vector2.Y);
+    
     public static ICell Get(int x, int y)
     {
-        try
-        {
-            return _ceils[(x, y)];
-        }
-        catch
-        {
-            return Air.Instance;
-        }
+        if (IsInBounds(x, y))
+            return _cells[y * Size.X + x] ?? Air.Instance;
+        return Air.Instance;
     }
 
     public static void Move(Vector2I from, Vector2I to)
@@ -38,24 +45,16 @@ public static class Grid
 
     public static ICell GetNeighbor(Vector2I vector2, Direction direction)
     {
-        switch (direction)
+        return direction switch
         {
-            case Direction.Up:
-                return Get(new(vector2.X, vector2.Y - 1));
-            case Direction.Down:
-                return Get(new(vector2.X, vector2.Y + 1));
-            case Direction.Left:
-                return Get(new(vector2.X - 1, vector2.Y));
-            case Direction.Right:
-                return Get(new(vector2.X + 1, vector2.Y));
-        }
-        
-        return Air.Instance;
+            Direction.Up => Get(vector2.X, vector2.Y - 1),
+            Direction.Down => Get(vector2.X, vector2.Y + 1),
+            Direction.Left => Get(vector2.X - 1, vector2.Y),
+            Direction.Right => Get(vector2.X + 1, vector2.Y),
+            _ => Air.Instance
+        };
     }
 
-    public static bool IsInBounds(Vector2I vector2)
-        => vector2.X >= 0 && vector2.X < Size.X && vector2.Y >= 0 && vector2.Y < Size.Y;
-    
-    public static Vector2I Size { get; internal set; }
-    public static int GroundLevel { get; internal set; }
+    public static bool IsInBounds(Vector2I vector2) => IsInBounds(vector2.X, vector2.Y);
+    public static bool IsInBounds(int x, int y) => x >= 0 && x < Size.X && y >= 0 && y < Size.Y;
 }

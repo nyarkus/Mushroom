@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Godot;
 using Mushroom.Data;
 
@@ -9,18 +10,19 @@ public static class Logic
 {
     public static void Calculate()
     {
-        var queue = new Stack<Action>();
+        var queue = new ConcurrentQueue<Action>();
         
-        for (int y = 0; y < Grid.Size.Y; y++)
+        Parallel.For(0, Grid.Size.Y, y =>
         {
             for (int x = 0; x < Grid.Size.X; x++)
             {
                 var ceil = Grid.Get(x, y);
                 var action = ceil.Do(new Vector2I(x, y));
+                
                 if(action != null)
-                    queue.Push(action);
+                    queue.Enqueue(action);
             }
-        }
+        });
         
         foreach (var action in queue)
             action();
