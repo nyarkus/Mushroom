@@ -14,7 +14,7 @@ public partial class Main : Node
 
 	public long Tick = 0;
 	public long WeatherTick = 0;
-	public long WeatherTicks = 0;
+	public long RainTicks = 0;
 	
 	private Stopwatch _stopwatch = new();
 	private TimeSpan _logicTime = TimeSpan.Zero;
@@ -54,13 +54,13 @@ public partial class Main : Node
 			if (Tick % 6 == 0)
 			{
 				Weather.Rain();
-				WeatherTicks++;
+				RainTicks++;
 			}
 
-			if (WeatherTicks >= 10)
+			if (RainTicks >= 100)
 			{
-				WeatherTick = Tick + _rand.Next(150, 1000);
-				WeatherTicks = 0;
+				WeatherTick = Tick + _rand.Next(150, 5000);
+				RainTicks = 0;
 			}
 		}
 

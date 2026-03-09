@@ -1,5 +1,6 @@
 using System;
 using Mushroom.Data;
+using Godot;
 
 namespace Mushroom.Ceils;
 
@@ -9,48 +10,49 @@ public class Mycelium : ICell
     public float Energy { get; set; } = 100f;
     public bool Main { get; set; }
     private int dies = 0;
-    public Position MainPosition { get; set; }
+    public Vector2I MainVector2 { get; set; }
     
-    public float _maxDistance = new Position(1,1).DistanceSquared(new Position(5,5));
+    public float _maxDistance { get; }= new Vector2I(1,0).DistanceSquaredTo(new Vector2I(5,0));
     private Random rand = new();
-    public Action? Do(Position position)
+    public Action? Do(Vector2I vector2)
     {
         if (Main)
         {
+            GD.Print($"Energy: {Energy}; Water: {Water}");
+            
             if (Energy > 0.42f && Water > 0.47f)
             {
-                if (Grid.GetNeighbor(position, Direction.Down) is not Mycelium)
+                if (Grid.GetNeighbor(vector2, Direction.Down) is Dirt)
                 {
                     return new Action(() =>
                     {
                         Energy -= 0.42f;
                         Water -= 0.47f;
-                        Grid.Set(new Position(position.X, position.Y + 1), new Mycelium()
+                        Grid.Set(new Vector2I(vector2.X, vector2.Y + 1), new Mycelium()
                         {
                             Energy = 0.2f,
                             Water = 0.25f,
-                            MainPosition = position
+                            MainVector2 = vector2
                         });
                     });
                 }   
             }
-            var neighbor = Grid.GetNeighbor(position, Direction.Up);
+            var neighbor = Grid.GetNeighbor(vector2, Direction.Up);
 
             if (neighbor is Air && Energy > 0.8f && Water > 0.85f)
             {
                 var targetY = Grid.GroundLevel - rand.Next(2, 6);
                 return new Action(() =>
                 {
-                    Grid.Set(position.X, position.Y - 1, new Stalk() { TargetY = targetY });
+                    Grid.Set(vector2.X, vector2.Y - 1, new Stalk() { TargetY = targetY });
 
                     Water -= 0.65f;
                     Energy -= 0.35f;
                 });
             }
-            
-            if (neighbor is Stalk stalk)
+            else if (neighbor is Stalk stalk)
             {
-                if ((stalk.Energy < 0.7f || stalk.Water < 0.8f) && (Water > 0.2f && Energy > 0.2f))
+                if ((stalk.Energy < 0.7f || stalk.Water < 0.8f) && (Water > 10f && Energy > 10f))
                 {
                     return new Action(() =>
                     {
@@ -66,32 +68,32 @@ public class Mycelium : ICell
             
         }
 
-        if (Energy > 0)
+        if (Energy > 0.0005f)
             Energy -= 0.0005f;
         else
             dies++;
-        if (Water > 0)
-            Water -= 0.0008f;
+        if (Water > 0.0001f)
+            Water -= 0.0001f;
         else
             dies++;
 
-        if (dies > 0 && Energy > 0.15f && Water > 0.25f)
+        if (dies > 0 && Energy > 0.015f && Water > 0.025f)
         {
-            Energy -= 0.15f;
-            Water -= 0.25f;
+            Energy -= 0.015f;
+            Water -= 0.025f;
             dies--;
         }
 
         if (dies >= 100)
             return new Action(() =>
             {
-                Grid.Set(position, new Dirt() { Dampness = 0f, Nutrients = 0.5f } );
+                Grid.Set(vector2, new Dirt() { Dampness = 0.5f, Nutrients = 0.5f } );
             });
         
-        var down = Grid.GetNeighbor(position, Direction.Down);
-        var up = Grid.GetNeighbor(position, Direction.Up);
-        var left = Grid.GetNeighbor(position, Direction.Left);
-        var right = Grid.GetNeighbor(position, Direction.Right);
+        var down = Grid.GetNeighbor(vector2, Direction.Down);
+        var up = Grid.GetNeighbor(vector2, Direction.Up);
+        var left = Grid.GetNeighbor(vector2, Direction.Left);
+        var right = Grid.GetNeighbor(vector2, Direction.Right);
 
         if (down is Dirt dirtDown)
             Dirt(dirtDown);
@@ -104,17 +106,15 @@ public class Mycelium : ICell
 
         if (!Main)
         {
-            // Ограничение на максимальную дистанцию от "корня" грибницы
-            if (position.DistanceSquared(MainPosition) < _maxDistance && Energy > 0.85f && Water > 0.95f)
+            if (vector2.DistanceSquaredTo(MainVector2) < _maxDistance 
+                && Energy > 0.85f && Water > 0.95f 
+                && Grid.GetNeighbor(vector2, Direction.Down) is not Mycelium)
             {
-                // Выбираем случайное направление. Убедитесь, что enum Direction имеет 4 значения (0-3).
                 var direction = (Direction)rand.Next(0, 4); 
-        
-                // Определяем позицию соседа
-                Position neighborPosition = position.GetNeighborPosition(direction); // Предполагая, что у вас есть такой хелпер, или вычислите вручную
-        
-                // Получаем соседа по вычисленной позиции
-                var neighbor = Grid.Get(neighborPosition);
+                
+                Vector2I neighborVector2 = vector2.GetNeighborPosition(direction);
+                
+                var neighbor = Grid.Get(neighborVector2);
 
                 if (neighbor is Dirt)
                 {
@@ -122,12 +122,11 @@ public class Mycelium : ICell
                     {
                         Energy -= 0.75f;
                         Water -= 0.85f;
-                        // ПРАВИЛЬНО: создаем мицелий на месте соседа (земли)
-                        Grid.Set(neighborPosition, new Mycelium()
+                        Grid.Set(neighborVector2, new Mycelium()
                         {
                             Energy = 0.5f,
                             Water = 0.25f,
-                            MainPosition = this.MainPosition // Передаем MainPosition дальше
+                            MainVector2 = this.MainVector2
                         });
                     });
                 }
@@ -139,7 +138,7 @@ public class Mycelium : ICell
                 while (true)
                 {
                     var direction = (Direction)rand.Next(0, 5);
-                    var neighbor = Grid.GetNeighbor(position, direction);
+                    var neighbor = Grid.GetNeighbor(vector2, direction);
 
                     if (neighbor is Mycelium m)
                     {
@@ -161,20 +160,20 @@ public class Mycelium : ICell
 
     private void Dirt(Dirt dirt)
     {
-        if (dirt.Dampness >= 0.1f)
+        if (dirt.Dampness >= 0.05f)
         {
-            dirt.Dampness -= 0.1f;
-            Water += 0.1f;   
+            dirt.Dampness -= 0.05f;
+            Water += 0.2f;   
         }
 
-        if (dirt.Nutrients >= 0.1f)
+        if (dirt.Nutrients >= 0.05f)
         {
-            dirt.Nutrients -= 0.1f;
-            Energy += 0.05f;
+            dirt.Nutrients -= 0.05f;
+            Energy += 0.15f;
         }
     }
 
-    public string GetColor(Position position)
+    public string GetColor(Vector2I vector2)
     {
         if (Energy == 0)
             return "#636363";

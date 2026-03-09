@@ -1,6 +1,6 @@
 using System;
-using System.Drawing;
 using Mushroom.Data;
+using Godot;
 
 namespace Mushroom.Ceils;
 
@@ -9,7 +9,7 @@ public class Water : ICell
     private static readonly Random _rand = new Random();
     private int lifeTime = 0;
 
-    public Action? Do(Position position)
+    public Action? Do(Vector2I vector2)
     {
         {
             Direction[] directions = { Direction.Up, Direction.Down, Direction.Left, Direction.Right };
@@ -17,7 +17,7 @@ public class Water : ICell
             bool isAir = false;
             foreach (var dir in directions)
             {
-                var neighbor = Grid.GetNeighbor(position, dir);
+                var neighbor = Grid.GetNeighbor(vector2, dir);
                 if (neighbor is Water)
                     waterCeils++;
                 if (neighbor is Air)
@@ -28,7 +28,7 @@ public class Water : ICell
                     return new Action(() =>
                     {
                         dirt.Dampness = Math.Clamp(dirt.Dampness + 0.3f, 0f, 1f);
-                        Grid.Set(position, Air.Instance);
+                        Grid.Set(vector2, Air.Instance);
                     });
                 }
             }
@@ -39,17 +39,17 @@ public class Water : ICell
 
         if (lifeTime > 300)
         {
-            return new Action(() => Grid.Set(position, Air.Instance));
+            return new Action(() => Grid.Set(vector2, Air.Instance));
         }
 
-        var downPosition = new Position(position.X, position.Y + 1);
+        var downPosition = new Vector2I(vector2.X, vector2.Y + 1);
         if (Grid.Get(downPosition) is Air)
         {
-            return new Action(() => Grid.Move(position, downPosition));
+            return new Action(() => Grid.Move(vector2, downPosition));
         }
         
-        var downLeftPosition = new Position(position.X - 1, position.Y + 1);
-        var downRightPosition = new Position(position.X + 1, position.Y + 1);
+        var downLeftPosition = new Vector2I(vector2.X - 1, vector2.Y + 1);
+        var downRightPosition = new Vector2I(vector2.X + 1, vector2.Y + 1);
 
         bool canFlowLeftDown = Grid.Get(downLeftPosition) is Air;
         bool canFlowRightDown = Grid.Get(downRightPosition) is Air;
@@ -57,19 +57,19 @@ public class Water : ICell
         if (canFlowLeftDown && canFlowRightDown)
         {
             var targetPosition = _rand.Next(0, 2) == 0 ? downLeftPosition : downRightPosition;
-            return new Action(() => Grid.Move(position, targetPosition));
+            return new Action(() => Grid.Move(vector2, targetPosition));
         }
         if (canFlowLeftDown)
         {
-            return new Action(() => Grid.Move(position, downLeftPosition));
+            return new Action(() => Grid.Move(vector2, downLeftPosition));
         }
         if (canFlowRightDown)
         {
-            return new Action(() => Grid.Move(position, downRightPosition));
+            return new Action(() => Grid.Move(vector2, downRightPosition));
         }
         
-        var leftPosition = new Position(position.X - 1, position.Y);
-        var rightPosition = new Position(position.X + 1, position.Y);
+        var leftPosition = new Vector2I(vector2.X - 1, vector2.Y);
+        var rightPosition = new Vector2I(vector2.X + 1, vector2.Y);
 
         bool canMoveLeft = Grid.Get(leftPosition) is Air;
         bool canMoveRight = Grid.Get(rightPosition) is Air;
@@ -77,39 +77,39 @@ public class Water : ICell
         if (canMoveLeft && canMoveRight)
         {
             var targetPosition = _rand.Next(0, 2) == 0 ? leftPosition : rightPosition;
-            return new Action(() => Grid.Move(position, targetPosition));
+            return new Action(() => Grid.Move(vector2, targetPosition));
         }
 
         if (canMoveLeft)
         {
-            return new Action(() => Grid.Move(position, leftPosition));
+            return new Action(() => Grid.Move(vector2, leftPosition));
         }
         if (canMoveRight)
         {
-            return new Action(() => Grid.Move(position, rightPosition));
+            return new Action(() => Grid.Move(vector2, rightPosition));
         }
         
         return null;
     }
 
-    public string GetColor(Position position)
+    public string GetColor(Vector2I vector2)
     {
         int depth = 0;
-        var currentPos = new Position(position.X, position.Y + 1);
+        var currentPos = new Vector2I(vector2.X, vector2.Y + 1);
 
         while (Grid.Get(currentPos) is Water && depth < 10)
         {
             depth++;
-            currentPos = new Position(currentPos.X, currentPos.Y + 1);
+            currentPos = new Vector2I(currentPos.X, currentPos.Y + 1);
         }
 
-        Color baseColor = ColorTranslator.FromHtml("#55a8e8");
+        System.Drawing.Color baseColor = System.Drawing.ColorTranslator.FromHtml("#55a8e8");
 
         int r = Math.Max(0, baseColor.R - depth * 15);
         int g = Math.Max(0, baseColor.G - depth * 15);
         int b = Math.Max(0, baseColor.B - depth * 10);
 
-        return ColorTranslator.ToHtml(Color.FromArgb(r, g, b));
+        return System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(r, g, b));
     }
 
     public char Symbol { get; } = '~';

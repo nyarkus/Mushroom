@@ -24,14 +24,14 @@ public partial class Render : Node2D
 		quadMesh = multiMesh.Mesh as QuadMesh;
 		if (quadMesh != null)
 		{
-			quadMesh.Size = new Vector2(CellSize, CellSize);
+			quadMesh.Size = new Godot.Vector2(CellSize, CellSize);
 		}
 		
 		CellSize = 8f;
 		var windowSize = GetWindow().Size;
 		var gridSize = Grid.Size;
 					
-		multiMeshInstance.Position = new Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
+		multiMeshInstance.Position = new Godot.Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
 	}
 	
 	public void RenderFrame()
@@ -43,12 +43,12 @@ public partial class Render : Node2D
 			{
 				int index = y * Grid.Size.X + x;
 				
-				var transform = new Transform2D(0, new Vector2(x * CellSize, y * CellSize));
+				var transform = new Transform2D(0, new Godot.Vector2(x * CellSize, y * CellSize));
 
 				Color cellColor;
 				var cell = Grid.Get(x, y);
 
-				cellColor = Color.FromString(cell.GetColor(new Position(x,y)), Colors.Magenta); 
+				cellColor = Color.FromString(cell.GetColor(new Vector2I(x, y)), Colors.Magenta); 
 				temp.Add((index, transform, cellColor));
 			});
 
@@ -74,7 +74,7 @@ public partial class Render : Node2D
 					var windowSize = GetWindow().Size;
 					var gridSize = Grid.Size;
 					
-					multiMeshInstance.Position = new Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
+					multiMeshInstance.Position = new Godot.Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
 				}
 			}
 				
@@ -92,7 +92,7 @@ public partial class Render : Node2D
 			if (mouseWheelEvent.ButtonIndex == MouseButton.WheelUp)
 			{
 				CellSize += 0.5f;
-				quadMesh.Size = new Vector2(CellSize, CellSize);
+				quadMesh.Size = new Godot.Vector2(CellSize, CellSize);
 			}
 			
 			if (mouseWheelEvent.ButtonIndex == MouseButton.WheelDown)
@@ -101,7 +101,7 @@ public partial class Render : Node2D
 				if (CellSize < 0.5f)
 					CellSize = 0.5f;
 				
-				quadMesh.Size = new Vector2(CellSize, CellSize);
+				quadMesh.Size = new Godot.Vector2(CellSize, CellSize);
 			}
 		}
 	}

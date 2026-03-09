@@ -25,14 +25,14 @@ public partial class MainMenu : Control
     }
     public void Generate()
     {
-        Position worldSize = _worldSize.GetItemText(_worldSizeIndex) switch
+        Vector2I worldSize = _worldSize.GetItemText(_worldSizeIndex) switch
         {
-            "Small" => new Position(80, 40),
-            "Medium" => new Position(160, 80),
-            "Large" => new Position(240, 120),
-            "Very Large" => new Position(320, 160),
-            "Colossal" => new Position(480, 200),
-            "Titanic" => new Position(640, 240),
+            "Small" => new Vector2I(80, 40),
+            "Medium" => new Vector2I(160, 80),
+            "Large" => new Vector2I(240, 120),
+            "Very Large" => new Vector2I(320, 160),
+            "Colossal" => new Vector2I(480, 200),
+            "Titanic" => new Vector2I(640, 240),
             _ => throw new ArgumentOutOfRangeException()
         };
 

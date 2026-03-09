@@ -1,5 +1,6 @@
 using System;
 using Mushroom.Data;
+using Godot;
 
 namespace Mushroom.Ceils;
 
@@ -11,45 +12,53 @@ public class Stalk : ICell
 
     private Random _rand = new();
     public int TargetY { get; set; } = Grid.GroundLevel - 4;
-    public Action? Do(Position position)
+    
+    public Action? Do(Vector2I vector2)
     {
-        if (Energy > 0.0001f)
+        var down = Grid.GetNeighbor(vector2, Direction.Down);
+        if (down is not Stalk && down is not Mycelium)
+        {
+            dies += 1; 
+            Energy = 0;
+            Water = 0;
+        }
+
+        if (Energy >= 0.0001f)
             Energy -= 0.0001f;
         else
             dies++;
-        if (Water > 0.001f)
-            Water -= 0.001f;
+        if (Water >= 0.0001f)
+            Water -= 0.0001f;
         else
             dies++;
 
-        if (dies > 0 && Energy > 0.2f && Water > 0.2f)
+        if (dies > 0 && Energy > 0.02f && Water > 0.02f)
         {
-            Energy -= 0.1f;
-            Water -= 0.1f;
+            Energy -= 0.01f;
+            Water -= 0.01f;
             dies--;
         }
 
-        if (dies > 50)
+        if (dies > 20)
         {
-            var down = Grid.GetNeighbor(position, Direction.Down);
             if (down is Stalk stalkDown)
             {
-                stalkDown.Energy += 0.1f;
-                stalkDown.Water += 0.1f;
-                
-                Grid.Set(position, Air.Instance);
+                stalkDown.Energy += Math.Max(0, Energy);
+                stalkDown.Water += Math.Max(0, Water);
+                Grid.Set(vector2, new RottingMatter() { BecomeAir = true } );
             }
             else if (down is Mycelium mycelium)
             {
-                mycelium.Energy += 0.1f;
-                mycelium.Water += 0.1f;
-                
-                Grid.Set(position, Air.Instance);
+                mycelium.Energy += Math.Max(0, Energy);
+                mycelium.Water += Math.Max(0, Water);
+                Grid.Set(vector2, new RottingMatter() { BecomeAir = true } );
             }
+            else 
+                Grid.Set(vector2, new RottingMatter() { BecomeAir = true } );
         }
         
-        var up = Grid.GetNeighbor(position, Direction.Up);
-        if (position.Y > TargetY && Water >= 0.6f && Energy >= 0.3f)
+        var up = Grid.GetNeighbor(vector2, Direction.Up);
+        if (vector2.Y > TargetY && Water >= 0.6f && Energy >= 0.3f)
         {
             if (up is Air)
             {
@@ -57,22 +66,22 @@ public class Stalk : ICell
                 {
                     Water -= 0.6f;
                     Energy -= 0.3f;
-
-                    Grid.Set(position.X, position.Y - 1, new Stalk() { TargetY = TargetY });
+                    
+                    Grid.Set(vector2.X, vector2.Y - 1, new Stalk() { TargetY = TargetY });
                 });   
             }
         }
-        else if (position.Y == TargetY)
+        else if (vector2.Y == TargetY)
         {
             if (up is Cap cap && (cap.Water < 0.5f || cap.Energy < 0.5f))
             {
                 return new Action(() =>
                 {
-                    float waterToGive = 0.5f - cap.Water;
+                    float waterToGive = Math.Min(0.5f - cap.Water, Math.Max(0, Water));
                     cap.Water += waterToGive;
                     Water -= waterToGive;
 
-                    float energyToGive = 0.5f - cap.Energy;
+                    float energyToGive = Math.Min(0.5f - cap.Energy, Math.Max(0, Energy));
                     cap.Energy += energyToGive;
                     Energy -= energyToGive;
                 });
@@ -84,8 +93,11 @@ public class Stalk : ICell
                 {
                     Water -= 0.4f;
                     Energy -= 0.4f;
-                    Grid.Set(position.X, position.Y - 1, new Cap() { StalkPosition = position, 
-                        MaxDistance = new Position(1,1).DistanceSquared(new Position(capSize,capSize)) 
+                    Grid.Set(vector2.X, vector2.Y - 1, new Cap() { 
+                        StalkVector2 = vector2, 
+                        MaxDistance = new Vector2I(1,0).DistanceSquaredTo(new Vector2I(capSize,0)),
+                        Water = 0.4f,
+                        Energy = 0.4f
                     });
                 });
             }
@@ -106,10 +118,6 @@ public class Stalk : ICell
         return null;
     }
 
-    public string GetColor(Position position)
-    {
-        return "#f7f8f9";
-    }
-
+    public string GetColor(Vector2I vector2) => "#f7f8f9";
     public char Symbol { get; } = '#';
 }

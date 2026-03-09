@@ -1,5 +1,6 @@
 using System;
 using Mushroom.Data;
+using Godot;
 
 namespace Mushroom.Ceils;
 
@@ -12,132 +13,126 @@ public class Cap : ICell
     private int _sporeTicks = 0;
     private const int _targetSporeTicks = 500;
     
-    public Position StalkPosition { get; set; }
-    public float MaxDistance { get; set; } = new Position(1, 1).DistanceSquared(new Position(3, 3));
-    public Action? Do(Position position)
+    public Vector2I StalkVector2 { get; set; }
+    public float MaxDistance { get; set; } = new Vector2I(1, 0).DistanceSquaredTo(new Vector2I(2, 0));
+
+    public Action? Do(Vector2I vector2)
     {
+        if (Grid.Get(StalkVector2) is not Stalk)
+        {
+            dies += 1; 
+            Energy = 0;
+            Water = 0;
+        }
         
-        if (Energy > 0.00005f)
+        if (Energy >= 0.00005f)
             Energy -= 0.00005f;
         else
             dies++;
-        if (Water > 0.0005f)
-            Water -= 0.0005f;
+            
+        if (Water >= 0.00005f)
+            Water -= 0.00005f;
         else
             dies++;
-
-        if (dies > 0 && Energy > 0.2f && Water > 0.2f)
+        
+        if (dies > 0 && Energy > 0.02f && Water > 0.02f)
         {
-            Energy -= 0.1f;
-            Water -= 0.1f;
+            Energy -= 0.01f;
+            Water -= 0.01f;
             dies--;
         }
-
-        if (dies > 20)
+        
+        if (dies > 10)
+        {
             return new Action(() =>
             {
-                Grid.Set(position, Air.Instance);
+                Grid.Set(vector2, new RottingMatter() { BecomeAir = true } );
             });
+        }
         
         var directions = new[] { Direction.Up, Direction.Left, Direction.Right };
         foreach (var dir in directions)
         {
-            var neighborPos = position.GetNeighborPosition(dir); 
-            if (StalkPosition.DistanceSquared(neighborPos) < MaxDistance)
+            var neighborPos = vector2.GetNeighborPosition(dir); 
+            if (StalkVector2.DistanceSquaredTo(neighborPos) < MaxDistance)
             {
-                if (Grid.Get(neighborPos) is Air && Water > 0.2f && Energy > 0.2f)
+                if (Grid.Get(neighborPos) is Air && Water > 0.4f && Energy > 0.4f)
                 {
                     return new Action(() =>
                     {
-                        Water -= 0.1f;
-                        Energy -= 0.1f;
-
-                        Grid.Set(neighborPos, new Cap() { StalkPosition = StalkPosition });
+                        Water -= 0.2f;
+                        Energy -= 0.2f;
+                        Grid.Set(neighborPos, new Cap() { StalkVector2 = StalkVector2, MaxDistance = MaxDistance });
                     });
                 }
             }
         }
 
+        var up = Grid.GetNeighbor(vector2, Direction.Up);
+        var down = Grid.GetNeighbor(vector2, Direction.Down);
+        var left = Grid.GetNeighbor(vector2, Direction.Left);
+        var right = Grid.GetNeighbor(vector2, Direction.Right);
         
-
-        var up = Grid.GetNeighbor(position, Direction.Up);
-        var down = Grid.GetNeighbor(position, Direction.Down);
-        var left = Grid.GetNeighbor(position, Direction.Left);
-        var right = Grid.GetNeighbor(position, Direction.Right);
-
         if (down is Air && left is not Air && right is not Air)
         {
             if (Water > 0.2f && Energy > 0.2f)
             {
-                Water -= 0.1f;
-                Energy -= 0.1f;
+                Water -= 0.05f;
+                Energy -= 0.05f;
                 _sporeTicks++;
             }
 
             if (_sporeTicks >= _targetSporeTicks)
             {
-                Grid.Set(position.X, position.Y + 1, new Spore());
+                Grid.Set(vector2.X, vector2.Y + 1, new Spore());
                 _sporeTicks = 0;
             }
         }
+        
+        var actionUp = TryGiveResource(up);
+        if (actionUp != null) return actionUp;
 
-        if (up is Cap cap && (cap.Energy < 0.5f || cap.Water < 0.5f))
-        {
-            return new Action(() =>
-            {
-                float waterToGive = 0.5f - cap.Water;
-                cap.Water += waterToGive;
-                Water -= waterToGive;
+        var actionDown = TryGiveResource(down);
+        if (actionDown != null) return actionDown;
 
-                float energyToGive = 0.5f - cap.Energy;
-                cap.Energy += energyToGive;
-                Energy -= energyToGive;
-            });
-        }
-        if (down is Cap capDown && (capDown.Energy < 0.5f || capDown.Water < 0.5f))
-        {
-            return new Action(() =>
-            {
-                float waterToGive = 0.5f - capDown.Water;
-                capDown.Water += waterToGive;
-                Water -= waterToGive;
-
-                float energyToGive = 0.5f - capDown.Energy;
-                capDown.Energy += energyToGive;
-                Energy -= energyToGive;
-            });
-        }
-        if (left is Cap capLeft && (capLeft.Energy < 0.5f || capLeft.Water < 0.5f))
-        {
-            return new Action(() =>
-            {
-                float waterToGive = 0.5f - capLeft.Water;
-                capLeft.Water += waterToGive;
-                Water -= waterToGive;
-
-                float energyToGive = 0.5f - capLeft.Energy;
-                capLeft.Energy += energyToGive;
-                Energy -= energyToGive;
-            });
-        }
-        if (right is Cap capRight && (capRight.Energy < 0.5f || capRight.Water < 0.5f))
-        {
-            return new Action(() =>
-            {
-                float waterToGive = 0.5f - capRight.Water;
-                capRight.Water += waterToGive;
-                Water -= waterToGive;
-
-                float energyToGive = 0.5f - capRight.Energy;
-                capRight.Energy += energyToGive;
-                Energy -= energyToGive;
-            });
-        }
+        var actionLeft = TryGiveResource(left);
+        if (actionLeft != null) return actionLeft;
+        
+        var actionRight = TryGiveResource(right);
+        if (actionRight != null) return actionRight;
 
         return null;
     }
+    
+    private Action? TryGiveResource(ICell neighbor)
+    {
+        if (Energy <= 0.5f && Water <= 0.5f)
+            return null;
+        
+        if (neighbor is Cap cap && (cap.Energy < 0.5f || cap.Water < 0.5f))
+        {
+            float waterNeeded = 0.5f - cap.Water;
+            float energyNeeded = 0.5f - cap.Energy;
+            
+            float waterToGive = Math.Max(0, Math.Min(waterNeeded, this.Water));
+            float energyToGive = Math.Max(0, Math.Min(energyNeeded, this.Energy));
+            
+            if (waterToGive <= 0 && energyToGive <= 0) 
+                return null;
 
-    public string GetColor(Position position)
+            return new Action(() =>
+            {
+                cap.Water += waterToGive;
+                this.Water -= waterToGive;
+
+                cap.Energy += energyToGive;
+                this.Energy -= energyToGive;
+            });
+        }
+        return null;
+    }
+
+    public string GetColor(Vector2I vector2)
     {
         return "#4f3b1a";
     }

@@ -9,57 +9,70 @@ public static class Generator
 {
     public static IProgress<float> Progress { get; set; }
     /// <summary>
-    /// Creates new world from 2 points - 0x0 and <paramref name="position"/>
-    /// <param name="groundLevel">If 0 it's will be set as <paramref name="position"/>.y / 3</param>
+    /// Creates new world from 2 points - 0x0 and <paramref name="size"/>
+    /// <param name="groundLevel">If 0 it's will be set as <paramref name="size"/>.y / 3</param>
     /// </summary>
-    public static void Generate(Position position, int groundLevel = 0, int seed = 0)
+    public static void Generate(Vector2I size, int groundLevel = 0, int seed = 0)
     {
-        Grid.Size = position;
+        Grid.Size = size;
         var rand = new Random(seed);
-        
-        var noise = new PerlinNoise(seed);
-        
-        float frequency = 0.03f; // Smooth
-        float amplitude = 5f; // Height
 
-        int baseGroundLevel = (groundLevel == 0) ? position.Y / 2 : groundLevel;
+        var noise = new FastNoiseLite();
+        noise.NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin;
+        noise.Seed = seed;
+        noise.Frequency = 0.03f;
+        
+        noise.FractalType = FastNoiseLite.FractalTypeEnum.Fbm;
+        noise.FractalOctaves = 3; 
+        
+        float amplitude = 15f; // Height
+
+        int baseGroundLevel = (groundLevel == 0) ? size.Y / 2 : groundLevel;
         Grid.GroundLevel = baseGroundLevel;
 
         
-        int myceliumX = rand.Next(0, position.X);
+        int myceliumX = rand.Next(0, size.X);
 
-        int progress = 0;
-        for (int y = 0; y < position.Y; y++)
+        int[] heights = new int[size.X];
+        for (int x = 0; x < size.X; x++)
         {
-            for (int x = 0; x < position.X; x++)
+            float noiseValue = noise.GetNoise1D(x);
+            int heightOffset = (int)(noiseValue * amplitude);
+            heights[x] = Math.Clamp(baseGroundLevel + heightOffset, 5, size.Y - 3);
+        }
+        
+        int progress = 0;
+        for (int y = 0; y < size.Y; y++)
+        {
+            for (int x = 0; x < size.X; x++)
             {
-                float noiseValue = noise.GetNoise(x * frequency);
+                int currentGroundLevel = heights[x]; 
                 
-                int heightOffset = (int)(noiseValue * amplitude);
-                int currentGroundLevel = baseGroundLevel + heightOffset;
-                
-                currentGroundLevel = Math.Clamp(currentGroundLevel, 5, position.Y - 3);
-
                 if (y == currentGroundLevel && x == myceliumX)
                 {
                     Grid.Set(x, y, new Mycelium() { Main = true });
+                    continue;
                 }
-                else if (y >= currentGroundLevel)
-                {
 
+                if (y >= currentGroundLevel)
+                {
                     bool canBeSand = true;
-                    for (int Y = y; Y > 0; --Y)
+                    if (currentGroundLevel > baseGroundLevel) 
                     {
-                        if (Grid.Get(x, Y) is Sand)
+                        for (int Y = y; Y > 0; --Y)
                         {
-                            canBeSand = false;
-                            break;
+                            if (Grid.Get(x, Y) is Sand)
+                            {
+                                canBeSand = false;
+                                break;
+                            }
                         }
                     }
-                    if (currentGroundLevel > baseGroundLevel && canBeSand)
-                    {
+                    else
+                        canBeSand = false;
+
+                    if (canBeSand)
                         Grid.Set(x, y, new Sand()); 
-                    }
                     else
                     {
                         float dampness = Math.Clamp(0.1f + (y - currentGroundLevel) * 0.1f, 0.1f, 1f);
@@ -68,15 +81,14 @@ public static class Generator
                     }
                 }
                 else if (y >= baseGroundLevel)
-                {
                     Grid.Set(x, y, new Water());
-                }
-
-                progress++;
-                Progress.Report(100f / (position.X * position.Y) * progress);
             }
+            
+            progress++;
+            Progress.Report(100f / size.Y * progress);
         }
         
-        Worm.Spawn(new Position(position.X / 2, position.Y / 2), 3);
+        Worm.Spawn(new Vector2I(size.X / 2, Grid.GroundLevel), 3);
+        //Worm.Spawn(new Vector2I(size.X / 2, Grid.GroundLevel + 3), 3);
     }
 }
