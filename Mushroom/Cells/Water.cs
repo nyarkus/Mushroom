@@ -105,9 +105,9 @@ public class Water : ICell
 
         Color baseColor = new Color(0.33f, 0.66f, 0.9f);
 
-        baseColor.R = Math.Max(0, baseColor.R - depth * 15);
-        baseColor.G = Math.Max(0, baseColor.G - depth * 15);
-        baseColor.B = Math.Max(0, baseColor.B - depth * 10);
+        //baseColor.R = Math.Max(0, baseColor.R - depth * 15);
+        //baseColor.G = Math.Max(0, baseColor.G - depth * 15);
+        //baseColor.B = Math.Max(0, baseColor.B - depth * 10);
 
         return baseColor;
     }

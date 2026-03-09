@@ -1,108 +1,130 @@
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Godot;
-using Mushroom;
 using Mushroom.Data;
 
 namespace Mushroom;
 
 public partial class Render : Node2D
 {
-	[Export]
-	private float CellSize = 8.0f;
-	
-	private MultiMeshInstance2D multiMeshInstance;
-	private MultiMesh multiMesh;
-	private QuadMesh quadMesh;
-	public void Initialize()
-	{
-		multiMeshInstance = GetNode<MultiMeshInstance2D>("MultiMeshInstance2D");
-		multiMesh = multiMeshInstance.Multimesh;
-		
-		multiMesh.InstanceCount = Grid.Size.X * Grid.Size.Y;
-		
-		quadMesh = multiMesh.Mesh as QuadMesh;
-		if (quadMesh != null)
-		{
-			quadMesh.Size = new Godot.Vector2(CellSize, CellSize);
-		}
-		
-		CellSize = 8f;
-		var windowSize = GetWindow().Size;
-		var gridSize = Grid.Size;
-					
-		multiMeshInstance.Position = new Godot.Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
-	}
-	
-	public void RenderFrame()
-	{
-		for (int y = 0; y < Grid.Size.Y; y++)
-		{
-			ConcurrentBag<(int index, Transform2D transform, Color color)> temp = new();
-			Parallel.For(0, Grid.Size.X, (x, state) =>
-			{
-				int index = y * Grid.Size.X + x;
-				
-				var transform = new Transform2D(0, new Godot.Vector2(x * CellSize, y * CellSize));
+    [Export]
+    private float CellSize = 8.0f;
+    
+    private MultiMeshInstance2D multiMeshInstance;
+    private MultiMesh multiMesh;
+    private QuadMesh quadMesh;
+    
+    private Color[] _calculatedColors;
+    private Color[] _lastAppliedColors;
+    
+    private int _gridWidth;
+    private int _gridHeight;
+    private int _totalCells;
 
-				Color cellColor;
-				var cell = Grid.Get(x, y);
+    public void Initialize()
+    {
+        multiMeshInstance = GetNode<MultiMeshInstance2D>("MultiMeshInstance2D");
+        multiMesh = multiMeshInstance.Multimesh;
+        
+        _gridWidth = Grid.Size.X;
+        _gridHeight = Grid.Size.Y;
+        _totalCells = _gridWidth * _gridHeight;
 
-				cellColor = cell.GetColor(new Vector2I(x, y)); 
-				temp.Add((index, transform, cellColor));
-			});
+        multiMesh.InstanceCount = _totalCells;
+        
+        quadMesh = multiMesh.Mesh as QuadMesh;
+        if (quadMesh != null)
+        {
+            quadMesh.Size = new Vector2(CellSize, CellSize);
+        }
+        
+        _calculatedColors = new Color[_totalCells];
+        _lastAppliedColors = new Color[_totalCells];
 
-			foreach (var cell in temp)
-			{
-				multiMesh.SetInstanceTransform2D(cell.index, cell.transform);
-				multiMesh.SetInstanceColor(cell.index, cell.color);
-			}
-		}
-	}
+        ResetPosition();
+        UpdateTransforms();
+    }
+    
+    public void RenderFrame()
+    {
+        Parallel.For(0, _totalCells, i =>
+        {
+            int x = i % _gridWidth;
+            int y = i / _gridWidth;
+            
+            var cell = Grid.Get(x, y);
+            _calculatedColors[i] = cell.GetColor(new Vector2I(x, y));
+        });
+        
+        for (int i = 0; i < _totalCells; i++)
+        {
+            if (_lastAppliedColors[i] != _calculatedColors[i])
+            {
+                multiMesh.SetInstanceColor(i, _calculatedColors[i]);
+                _lastAppliedColors[i] = _calculatedColors[i];
+            }
+        }
+    }
+    
+    private void UpdateTransforms()
+    {
+        if (quadMesh != null)
+            quadMesh.Size = new Vector2(CellSize, CellSize);
 
-	private bool isDragging;
-	public override void _Input(InputEvent @event)
-	{
-		if (@event is InputEventMouseButton mouseButtonEvent)
-		{
-			if (mouseButtonEvent.ButtonIndex == MouseButton.Right)
-			{
-				isDragging = mouseButtonEvent.IsPressed();
-				if (mouseButtonEvent.IsDoubleClick())
-				{
-					CellSize = 8f;
-					var windowSize = GetWindow().Size;
-					var gridSize = Grid.Size;
-					
-					multiMeshInstance.Position = new Godot.Vector2(windowSize.X / gridSize.X * CellSize * 2, windowSize.Y / gridSize.Y * CellSize );
-				}
-			}
-				
-		}
-		
-		if (@event is InputEventMouseMotion mouseMotionEvent)
-		{
-			if (isDragging)
-				multiMeshInstance.Position += mouseMotionEvent.Relative;
-			
-		}
+        for (int i = 0; i < _totalCells; i++)
+        {
+            int x = i % _gridWidth;
+            int y = i / _gridWidth;
+            
+            var transform = new Transform2D(0, new Vector2(x * CellSize, y * CellSize));
+            multiMesh.SetInstanceTransform2D(i, transform);
+        }
+    }
 
-		if (@event is InputEventMouseButton mouseWheelEvent && mouseWheelEvent.IsPressed())
-		{
-			if (mouseWheelEvent.ButtonIndex == MouseButton.WheelUp)
-			{
-				CellSize += 0.5f;
-				quadMesh.Size = new Godot.Vector2(CellSize, CellSize);
-			}
-			
-			if (mouseWheelEvent.ButtonIndex == MouseButton.WheelDown)
-			{
-				CellSize -= 0.5f;
-				if (CellSize < 0.5f)
-					CellSize = 0.5f;
-				
-				quadMesh.Size = new Godot.Vector2(CellSize, CellSize);
-			}
-		}
-	}
+    private void ResetPosition()
+    {
+        CellSize = 8f;
+        var windowSize = GetWindow().Size;
+        
+        multiMeshInstance.Position = new Vector2(
+            (float)windowSize.X / _gridWidth * CellSize * 2, 
+            (float)windowSize.Y / _gridHeight * CellSize
+        );
+        UpdateTransforms();
+    }
+
+    private bool isDragging;
+    
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseButtonEvent)
+        {
+            if (mouseButtonEvent.ButtonIndex == MouseButton.Right)
+            {
+                isDragging = mouseButtonEvent.IsPressed();
+                if (mouseButtonEvent.IsDoubleClick())
+                    ResetPosition();
+            }
+            
+            if (mouseButtonEvent.IsPressed())
+            {
+                if (mouseButtonEvent.ButtonIndex == MouseButton.WheelUp)
+                {
+                    CellSize += 0.5f;
+                    UpdateTransforms();
+                }
+                else if (mouseButtonEvent.ButtonIndex == MouseButton.WheelDown)
+                {
+                    CellSize -= 0.5f;
+                    if (CellSize < 0.5f) CellSize = 0.5f;
+                    
+                    UpdateTransforms();
+                }
+            }
+        }
+        else if (@event is InputEventMouseMotion mouseMotionEvent)
+        {
+            if (isDragging)
+                multiMeshInstance.Position += mouseMotionEvent.Relative;
+        }
+    }
 }
