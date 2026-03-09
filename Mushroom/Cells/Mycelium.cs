@@ -18,8 +18,6 @@ public class Mycelium : ICell
     {
         if (Main)
         {
-            GD.Print($"Energy: {Energy}; Water: {Water}");
-            
             if (Energy > 0.42f && Water > 0.47f)
             {
                 if (Grid.GetNeighbor(vector2, Direction.Down) is Dirt)
