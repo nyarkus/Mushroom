@@ -103,13 +103,18 @@ jobs:
     steps:
       - name: Setup butler
         run: |
+          # Source: https://github.com/abarichello/godot-ci/blob/master/getbutler.sh
           mkdir -p /opt/butler/bin
           cd /opt/butler/bin
+
           wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip butler.zip
-          chmod +x butler
-          echo "/opt/butler/bin" >> $GITHUB_PATH
 
+          # GNU unzip tends to not set the executable bit even though it's set in the .zip
+          chmod +x butler
+
+          echo "/opt/butler/bin" >> $GITHUB_PATH
+          cd ~
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
@@ -120,16 +125,6 @@ jobs:
         with:
           name: linux
           path: build/linux
-
-      - name: Set Channel Suffix
-        id: channel_info
-        run: |
-          if [ "${{ github.ref_name }}" = "master" ]; then
-            echo "SUFFIX=stable" >> $GITHUB_ENV
-          else
-            echo "SUFFIX=indev" >> $GITHUB_ENV
-          fi
-
       - name: Deploy to Itch.io
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
