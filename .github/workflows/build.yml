@@ -106,7 +106,6 @@ jobs:
           wget https://raw.githubusercontent.com/abarichello/godot-ci/refs/heads/master/getbutler.sh
           chmod +x getbutler.sh
           ./getbutler.sh
-          echo "$(pwd)" >> $GITHUB_PATH
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
