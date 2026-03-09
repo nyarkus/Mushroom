@@ -3,25 +3,12 @@ updates:
   # NuGet
   - package-ecosystem: "nuget"
     directory: "/"
-    target-branch: dev
+    target-branch: master
     schedule:
-      interval: "daily"
-    groups:
-      tests:
-        patterns:
-          - 'xunit*'
-          - 'coverlet.collector*'
-          - 'Microsoft.NET.Test.Sdk'
-      serializers:
-        patterns:
-          - 'Newtonsoft.Json'
-          - 'Yaml*'
-          - 'Toml*'
-          - 'Proto*'
-          - 'Flat*'
-  # Cargo
-  - package-ecosystem: "cargo"
-    directory: "Core/"
-    target-branch: dev
+      interval: "weekly"
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/.github/"
+    target-branch: master
     schedule:
       interval: "weekly"
