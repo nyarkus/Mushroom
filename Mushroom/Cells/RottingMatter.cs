@@ -60,7 +60,7 @@ public class RottingMatter : ICell
         return null;
     }
 
-    public string GetColor(Vector2I pos) => "#ffffff";
+    public string GetColor(Vector2I pos) => "#26221d";
 
     public char Symbol { get; } = 'H';
 }
