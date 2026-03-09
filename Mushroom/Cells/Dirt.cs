@@ -5,7 +5,7 @@ using Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
-public class Dirt : ICell
+public class Dirt : CellBase
 {
     private const float MAX_DAMPNESS = 1.0f;
     private const float MIN_DAMPNESS = 0.0f;
@@ -23,7 +23,7 @@ public class Dirt : ICell
     
     public char Symbol { get; } = '#';
 
-    public Action? Do(Vector2I vector2)
+    public override Action? Do(Vector2I vector2)
     {
         float nextDampness = Dampness;
         float nextNutrients = Nutrients;
@@ -98,7 +98,7 @@ public class Dirt : ICell
         return null;
     }
 
-    public Color GetColor(Vector2I vector2)
+    public override Color GetColor(Vector2I vector2)
     {
         float t = Math.Clamp(Dampness / MAX_DAMPNESS, 0.0f, 1.0f);
         return DRY_COLOR.Lerp(WET_COLOR, t);

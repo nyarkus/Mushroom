@@ -52,7 +52,8 @@ public partial class Render : Node2D
             int y = i / _gridWidth;
             
             var cell = Grid.Get(x, y);
-            _calculatedColors[i] = cell.GetColor(new Vector2I(x, y));
+            _calculatedColors[i] = //cell.GetColor(new Vector2I(x, y));
+                cell.CachedColor;
         });
         
         for (int i = 0; i < _totalCells; i++)

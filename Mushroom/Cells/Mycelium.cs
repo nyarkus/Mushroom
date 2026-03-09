@@ -5,7 +5,7 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Mycelium : ICell
+public class Mycelium : CellBase
 {
     public float Water { get; set; } = 100f;
     public float Energy { get; set; } = 100f;
@@ -15,7 +15,7 @@ public class Mycelium : ICell
     
     public float _maxDistance { get; }= new Vector2I(1,0).DistanceSquaredTo(new Vector2I(5,0));
     
-    public Action? Do(Vector2I vector2)
+    public override Action? Do(Vector2I vector2)
     {
         float nextEnergy = Energy;
         float nextWater = Water;
@@ -195,7 +195,7 @@ public class Mycelium : ICell
         }
     }
 
-    public Color GetColor(Vector2I vector2)
+    public override Color GetColor(Vector2I vector2)
     {
         if (Energy == 0)
             return new Color(0.39f, 0.39f, 0.39f);

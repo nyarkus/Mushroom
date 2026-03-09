@@ -4,10 +4,10 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class WormCocoon : ICell
+public class WormCocoon : CellBase
 {
     private int _ticks = 0;
-    public Action? Do(Vector2I vector2)
+    public override Action? Do(Vector2I vector2)
     {
         if (_ticks >= 350)
         {
@@ -30,7 +30,7 @@ public class WormCocoon : ICell
         return () => _ticks++;
     }
 
-    public Color GetColor(Vector2I vector2)
+    public override Color GetColor(Vector2I vector2)
         => new Color(0.89f, 0.89f, 0.8f);
 
     public char Symbol { get; } = '*';

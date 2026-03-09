@@ -4,7 +4,7 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Cap : ICell
+public class Cap : CellBase
 {
     public float Water { get; set; } = 1f;
     public float Energy { get; set; } = 1f;
@@ -15,7 +15,7 @@ public class Cap : ICell
     public Vector2I StalkVector2 { get; set; }
     public float MaxDistance { get; set; } = new Vector2I(1, 0).DistanceSquaredTo(new Vector2I(2, 0));
 
-    public Action? Do(Vector2I vector2)
+    public override Action? Do(Vector2I vector2)
     {
         float nextEnergy = Energy;
         float nextWater = Water;
@@ -100,7 +100,7 @@ public class Cap : ICell
         return null;
     }
     
-    private Action? TryGiveResource(ICell neighbor)
+    private Action? TryGiveResource(CellBase neighbor)
     {
         if (Energy <= 0.5f && Water <= 0.5f) return null;
         
@@ -129,6 +129,6 @@ public class Cap : ICell
         return null;
     }
 
-    public Color GetColor(Vector2I vector2) => new Color(0.3f, 0.23f, 0.1f);
+    public override Color GetColor(Vector2I vector2) => new Color(0.3f, 0.23f, 0.1f);
     public char Symbol { get; } = '#';
 }

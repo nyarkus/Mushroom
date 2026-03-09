@@ -4,11 +4,11 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Air : ICell
+public class Air : CellBase
 {
-    public Action Do(Vector2I vector2) => null;
+    public override Action Do(Vector2I vector2) => null;
 
-    public Color GetColor(Vector2I vector2)
+    public override Color GetColor(Vector2I vector2)
         => new Color(0, 0, 0);
     public char Symbol { get; } = ' ';
 

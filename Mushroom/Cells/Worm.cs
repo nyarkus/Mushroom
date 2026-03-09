@@ -5,18 +5,18 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Worm : ICell
+public class Worm : CellBase
 {
     private Vector2I[] positions = Array.Empty<Vector2I>();
     private bool canReproduce = true;
     
     public Guid WormId { get; set; } = Guid.NewGuid(); 
-    public ICell Underneath { get; set; } = new Air();
+    public CellBase Underneath { get; set; } = Air.Instance;
     public bool Main { get; set; } 
     public int Age { get; set; }
     public int TargetLifeTime { get; set; } = 1000;
     
-    public Action? Do(Vector2I headPos)
+    public override Action? Do(Vector2I headPos)
     {
         int nextAge = Age;
         nextAge++;
@@ -176,7 +176,7 @@ public class Worm : ICell
             else if (targetCell is Worm) 
                 targetCell = new Dirt() { Dampness = 0.5f, Nutrients = 0.5f };
             
-            ICell cellToRestore = (tailWorms.Length > 0 ? tailWorms[^1]?.Underneath : headWorm.Underneath) ?? new Air();
+            CellBase cellToRestore = (tailWorms.Length > 0 ? tailWorms[^1]?.Underneath : headWorm.Underneath) ?? new Air();
             
             if (cellToRestore is Dirt dirt) 
                 dirt.Nutrients = 1f;
@@ -276,6 +276,6 @@ public class Worm : ICell
         worm.positions = tailPositions.ToArray();
     }
 
-    public Color GetColor(Vector2I pos) => Main ? new Color(0.6f, 0.25f, 0.44f) : new Color(0.8f, 0.35f, 0.6f);
+    public override Color GetColor(Vector2I pos) => Main ? new Color(0.6f, 0.25f, 0.44f) : new Color(0.8f, 0.35f, 0.6f);
     public char Symbol { get; } = '#';
 }

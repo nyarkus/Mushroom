@@ -5,12 +5,12 @@ using Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
-public class RottingMatter : ICell
+public class RottingMatter : CellBase
 {
     public bool BecomeAir { get; set; }
     private int _age = 0;
     
-    public Action? Do(Vector2I pos)
+    public override Action? Do(Vector2I pos)
     {
         var downPos = pos + new Vector2I(0, 1);
         if (Grid.IsInBounds(downPos) && Grid.Get(downPos) is Air)
@@ -64,7 +64,7 @@ public class RottingMatter : ICell
         return () => _age++;
     }
 
-    public Color GetColor(Vector2I pos) => new Color(0.15f, 0.13f, 0.11f);
+    public override Color GetColor(Vector2I pos) => new Color(0.15f, 0.13f, 0.11f);
 
     public char Symbol { get; } = 'H';
 }

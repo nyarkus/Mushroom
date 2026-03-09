@@ -7,29 +7,29 @@ namespace Mushroom;
 
 public static class Grid
 {
-    private static ICell[] _cells;
+    private static CellBase[] _cells;
     public static Vector2I Size { get; private set; }
     public static int GroundLevel { get; internal set; }
 
     public static void Initialize(Vector2I size)
     {
         Size = size;
-        _cells = new ICell[size.X * size.Y];
+        _cells = new CellBase[size.X * size.Y];
         for (int i = 0; i < _cells.Length; i++)
             _cells[i] = Air.Instance;
     }
 
-    public static void Set(Vector2I vector2, ICell cell) => Set(vector2.X, vector2.Y, cell);
+    public static void Set(Vector2I vector2, CellBase cell) => Set(vector2.X, vector2.Y, cell);
     
-    public static void Set(int x, int y, ICell cell)
+    public static void Set(int x, int y, CellBase cell)
     {
         if (IsInBounds(x, y))
             _cells[y * Size.X + x] = cell;
     }
 
-    public static ICell Get(Vector2I vector2) => Get(vector2.X, vector2.Y);
+    public static CellBase Get(Vector2I vector2) => Get(vector2.X, vector2.Y);
     
-    public static ICell Get(int x, int y)
+    public static CellBase Get(int x, int y)
     {
         if (IsInBounds(x, y))
             return _cells[y * Size.X + x] ?? Air.Instance;
@@ -43,7 +43,7 @@ public static class Grid
         Set(to, target);
     }
 
-    public static ICell GetNeighbor(Vector2I vector2, Direction direction)
+    public static CellBase GetNeighbor(Vector2I vector2, Direction direction)
     {
         return direction switch
         {

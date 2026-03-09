@@ -4,7 +4,7 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Spore : ICell
+public class Spore : CellBase
 {
     private int _ticksOnDirt = 0;
     private int _ticksOnAir = 0;
@@ -16,7 +16,7 @@ public class Spore : ICell
         _windDirection = Random.Shared.Next(0, 2) == 0 ? -1 : 1;
     }
     
-    public Action? Do(Vector2I position)
+    public override Action? Do(Vector2I position)
     {
         int nextTickDirt = _ticksOnDirt;
         int nextTickAir = _ticksOnAir;
@@ -105,7 +105,7 @@ public class Spore : ICell
         };
     }
 
-    public Color GetColor(Vector2I position)
+    public override Color GetColor(Vector2I position)
         => new Color(0.97f, 0.97f, 0.97f);
 
     public char Symbol { get; } = '~';

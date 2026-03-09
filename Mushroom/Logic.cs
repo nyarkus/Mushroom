@@ -17,7 +17,10 @@ public static class Logic
             for (int x = 0; x < Grid.Size.X; x++)
             {
                 var ceil = Grid.Get(x, y);
-                var action = ceil.Do(new Vector2I(x, y));
+                
+                var vector = new Vector2I(x, y);
+                var action = ceil.Do(vector);
+                ceil.GetAndCacheColor(vector);
                 
                 if(action != null)
                     queue.Enqueue(action);

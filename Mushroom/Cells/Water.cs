@@ -4,11 +4,11 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Water : ICell
+public class Water : CellBase
 {
     private int lifeTime = 0;
 
-    public Action? Do(Vector2I vector2)
+    public override Action? Do(Vector2I position)
     {
         int nextLifeTime = lifeTime;
         
@@ -18,7 +18,7 @@ public class Water : ICell
         
         foreach (var dir in directions)
         {
-            var neighbor = Grid.GetNeighbor(vector2, dir);
+            var neighbor = Grid.GetNeighbor(position, dir);
             if (neighbor is Water) 
                 waterCeils++;
             if (neighbor is Air) 
@@ -29,7 +29,7 @@ public class Water : ICell
                 return () =>
                 {
                     dirt.Dampness = Math.Clamp(dirt.Dampness + 0.3f, 0f, 1f);
-                    Grid.Set(vector2, Air.Instance);
+                    Grid.Set(position, Air.Instance);
                 };
             }
         }
@@ -38,18 +38,18 @@ public class Water : ICell
             nextLifeTime++;
 
         if (nextLifeTime > 300)
-            return () => Grid.Set(vector2, Air.Instance);
+            return () => Grid.Set(position, Air.Instance);
 
-        var downPosition = new Vector2I(vector2.X, vector2.Y + 1);
+        var downPosition = new Vector2I(position.X, position.Y + 1);
         if (Grid.Get(downPosition) is Air)
             return () =>
             {
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, downPosition);
+                Grid.Move(position, downPosition);
             };
         
-        var downLeftPosition = new Vector2I(vector2.X - 1, vector2.Y + 1);
-        var downRightPosition = new Vector2I(vector2.X + 1, vector2.Y + 1);
+        var downLeftPosition = new Vector2I(position.X - 1, position.Y + 1);
+        var downRightPosition = new Vector2I(position.X + 1, position.Y + 1);
 
         bool canFlowLeftDown = Grid.Get(downLeftPosition) is Air;
         bool canFlowRightDown = Grid.Get(downRightPosition) is Air;
@@ -60,24 +60,24 @@ public class Water : ICell
             return () =>
             {
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, targetPosition);
+                Grid.Move(position, targetPosition);
             };
         }
         if (canFlowLeftDown) 
             return () =>
             {
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, downLeftPosition);
+                Grid.Move(position, downLeftPosition);
             };
         if (canFlowRightDown) 
             return () => 
             { 
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, downRightPosition);
+                Grid.Move(position, downRightPosition);
             };
         
-        var leftPosition = new Vector2I(vector2.X - 1, vector2.Y);
-        var rightPosition = new Vector2I(vector2.X + 1, vector2.Y);
+        var leftPosition = new Vector2I(position.X - 1, position.Y);
+        var rightPosition = new Vector2I(position.X + 1, position.Y);
 
         bool canMoveLeft = Grid.Get(leftPosition) is Air;
         bool canMoveRight = Grid.Get(rightPosition) is Air;
@@ -88,7 +88,7 @@ public class Water : ICell
             return () =>
             {
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, targetPosition);
+                Grid.Move(position, targetPosition);
             };
         }
 
@@ -96,13 +96,13 @@ public class Water : ICell
             return () =>
             {
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, leftPosition);
+                Grid.Move(position, leftPosition);
             };
         if (canMoveRight) 
             return () =>
             {
                 lifeTime = nextLifeTime; 
-                Grid.Move(vector2, rightPosition);
+                Grid.Move(position, rightPosition);
             };
         
 
@@ -115,10 +115,10 @@ public class Water : ICell
         return null;
     }
 
-    public Color GetColor(Vector2I vector2)
+    public override Color GetColor(Vector2I position)
     {
         //int depth = 0;
-        //var currentPos = new Vector2I(vector2.X, vector2.Y + 1);
+        //var currentPos = new Vector2I(position.X, position.Y + 1);
 
         // while (Grid.Get(currentPos) is Water && depth < 10)
         // {

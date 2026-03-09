@@ -4,14 +4,14 @@ using Godot;
 
 namespace Mushroom.Ceils;
 
-public class Stalk : ICell
+public class Stalk : CellBase
 {
     public float Water { get; set; } = 0.6f;
     public float Energy { get; set; } = 0.3f;
     private int dies { get; set; } = 0;
     public int TargetY { get; set; } = Grid.GroundLevel - 4;
     
-    public Action? Do(Vector2I vector2)
+    public override Action? Do(Vector2I vector2)
     {
         float nextWater = Water;
         float nextEnergy = Energy;
@@ -145,6 +145,6 @@ public class Stalk : ICell
         };
     }
 
-    public Color GetColor(Vector2I vector2) => new Color(0.97f, 0.97f, 0.97f);
+    public override Color GetColor(Vector2I vector2) => new Color(0.97f, 0.97f, 0.97f);
     public char Symbol { get; } = '#';
 }

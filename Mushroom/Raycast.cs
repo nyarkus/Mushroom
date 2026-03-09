@@ -17,7 +17,7 @@ public static class Raycast
                 return new RaycastResult(false, default, default);
             
 
-            ICell result = Grid.Get(position);
+            CellBase result = Grid.Get(position);
             if (result is not Air)
                 return new RaycastResult(true, position, result);
         }
@@ -34,7 +34,7 @@ public static class Raycast
             if (!Grid.IsInBounds(position))
                 return new RaycastResult(false, default, default);
 
-            ICell result = Grid.Get(position);
+            CellBase result = Grid.Get(position);
 
             // ReadOnlySpan don't have LINQ :/
             bool skip = false;
@@ -55,4 +55,4 @@ public static class Raycast
     }
 }
 
-public record RaycastResult(bool IsHit, Vector2I Position, ICell Cell);
+public record RaycastResult(bool IsHit, Vector2I Position, CellBase Cell);
