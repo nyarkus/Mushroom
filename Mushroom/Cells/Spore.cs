@@ -46,7 +46,7 @@ public class Spore : ICell
                 return new Action(() =>
                 {
                     Grid.Set(new Vector2I(position.X, position.Y + 1), new Mycelium() { Main = true });
-                    Grid.Set(position, new RottingMatter());
+                    Grid.Set(position, new RottingMatter() { BecomeAir = true });
                 });
             }
         }
@@ -54,7 +54,7 @@ public class Spore : ICell
         {
             _ticksOnAir++;
             if (_ticksOnAir > 200)
-                return new Action(() => Grid.Set(position, new RottingMatter()));
+                return new Action(() => Grid.Set(position, new RottingMatter() { BecomeAir = true } ));
 
             _airTicks++;
             

@@ -23,11 +23,12 @@ public class RottingMatter : ICell
         
         if (_age > 500)
         {
-            if (BecomeAir && Grid.Get(downPos) is Dirt dirt)
+            if (BecomeAir)
             {
                 return new Action(() =>
                 {
-                    dirt.Nutrients = Math.Clamp(dirt.Nutrients + 0.3f, 0f, 1f);
+                    if(Grid.Get(downPos) is Dirt dirt)
+                        dirt.Nutrients = Math.Clamp(dirt.Nutrients + 0.3f, 0f, 1f);
                     Grid.Set(pos, Air.Instance);
                 });
             }
