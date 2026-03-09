@@ -122,5 +122,5 @@ jobs:
           ITCHIO_USERNAME: ${{ vars.ITCHIO_USERNAME }}
           ITCHIO_GAME: ${{ vars.ITCHIO_GAME }}
         run: |
-          butler push build/windows $ITCHIO_USERNAME/$ITCHIO_GAME:windows-${{ env.SUFFIX }} --ignore '*.pdb'
-          butler push build/linux $ITCHIO_USERNAME/$ITCHIO_GAME:linux-${{ env.SUFFIX }} --ignore '*.pdb'
+          /opt/butler/bin/butler push build/windows $ITCHIO_USERNAME/$ITCHIO_GAME:windows-${{ env.SUFFIX }} --ignore '*.pdb'
+          /opt/butler/bin/butler push build/linux $ITCHIO_USERNAME/$ITCHIO_GAME:linux-${{ env.SUFFIX }} --ignore '*.pdb'
