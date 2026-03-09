@@ -14,6 +14,6 @@ public interface ICell
     /// <summary>
     /// HEX
     /// </summary>
-    public string GetColor(Vector2I position);
+    public Color GetColor(Vector2I position);
     public char Symbol { get; }
 }

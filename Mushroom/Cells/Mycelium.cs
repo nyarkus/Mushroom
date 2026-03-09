@@ -171,16 +171,16 @@ public class Mycelium : ICell
         }
     }
 
-    public string GetColor(Vector2I vector2)
+    public Color GetColor(Vector2I vector2)
     {
         if (Energy == 0)
-            return "#636363";
+            return new Color(0.39f, 0.39f, 0.39f);
         if (Energy > 0.1 && Energy < 0.3)
-            return "#8e8e8e";
+            return new Color(0.56f, 0.56f, 0.56f);
         if (Energy > 0.3 && Energy < 0.6)
-            return "#b7b7b7";
+            return new Color(0.72f, 0.72f, 0.72f);
 
-        return "#cecece";
+        return new Color(0.81f, 0.81f, 0.81f);
     }
 
     public char Symbol { get; } = '#';

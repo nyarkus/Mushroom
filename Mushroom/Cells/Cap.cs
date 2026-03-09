@@ -132,10 +132,8 @@ public class Cap : ICell
         return null;
     }
 
-    public string GetColor(Vector2I vector2)
-    {
-        return "#4f3b1a";
-    }
+    public Color GetColor(Vector2I vector2)
+        => new Color(0.3f, 0.23f, 0.1f);
 
     public char Symbol { get; } = '#';
 }

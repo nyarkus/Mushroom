@@ -37,8 +37,8 @@ public class Sand : ICell
         return null;
     }
 
-    public string GetColor(Vector2I vector2)
-        => Wet ? "#abad3a" : "#dde04c";
+    public Color GetColor(Vector2I vector2)
+        => Wet ? new Color(0.67f, 0.68f, 0.23f) : new Color(0.86f, 0.87f, 0.3f);
 
     public char Symbol { get; } = '#';
 }

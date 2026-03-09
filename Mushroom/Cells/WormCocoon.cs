@@ -28,8 +28,8 @@ public class WormCocoon : ICell
         return null;
     }
 
-    public string GetColor(Vector2I vector2)
-        => "#e5e5cc";
+    public Color GetColor(Vector2I vector2)
+        => new Color(0.89f, 0.89f, 0.8f);
 
     public char Symbol { get; } = '*';
 }

@@ -81,8 +81,8 @@ public class Spore : ICell
         return null;
     }
 
-    public string GetColor(Vector2I position)
-        => "#f7f7f7";
+    public Color GetColor(Vector2I position)
+        => new Color(0.97f, 0.97f, 0.97f);
 
     public char Symbol { get; } = '~';
 }

@@ -118,6 +118,6 @@ public class Stalk : ICell
         return null;
     }
 
-    public string GetColor(Vector2I vector2) => "#f7f8f9";
+    public Color GetColor(Vector2I vector2) => new Color(0.97f, 0.97f, 0.97f);
     public char Symbol { get; } = '#';
 }

@@ -92,7 +92,7 @@ public class Water : ICell
         return null;
     }
 
-    public string GetColor(Vector2I vector2)
+    public Color GetColor(Vector2I vector2)
     {
         int depth = 0;
         var currentPos = new Vector2I(vector2.X, vector2.Y + 1);
@@ -103,13 +103,13 @@ public class Water : ICell
             currentPos = new Vector2I(currentPos.X, currentPos.Y + 1);
         }
 
-        System.Drawing.Color baseColor = System.Drawing.ColorTranslator.FromHtml("#55a8e8");
+        Color baseColor = new Color(0.33f, 0.66f, 0.9f);
 
-        int r = Math.Max(0, baseColor.R - depth * 15);
-        int g = Math.Max(0, baseColor.G - depth * 15);
-        int b = Math.Max(0, baseColor.B - depth * 10);
+        baseColor.R = Math.Max(0, baseColor.R - depth * 15);
+        baseColor.G = Math.Max(0, baseColor.G - depth * 15);
+        baseColor.B = Math.Max(0, baseColor.B - depth * 10);
 
-        return System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(r, g, b));
+        return baseColor;
     }
 
     public char Symbol { get; } = '~';

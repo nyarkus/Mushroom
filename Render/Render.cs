@@ -48,7 +48,7 @@ public partial class Render : Node2D
 				Color cellColor;
 				var cell = Grid.Get(x, y);
 
-				cellColor = Color.FromString(cell.GetColor(new Vector2I(x, y)), Colors.Magenta); 
+				cellColor = cell.GetColor(new Vector2I(x, y)); 
 				temp.Add((index, transform, cellColor));
 			});
 

@@ -272,6 +272,6 @@ public class Worm : ICell
         worm.positions = tailPositions.ToArray();
     }
 
-    public string GetColor(Vector2I pos) => Main ? "#994170" : "#ce5a98";
+    public Color GetColor(Vector2I pos) => Main ? new Color(0.6f, 0.25f, 0.44f) : new Color(0.8f, 0.35f, 0.6f);
     public char Symbol { get; } = '#';
 }
