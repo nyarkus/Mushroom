@@ -110,15 +110,12 @@ public partial class Render : Node2D
             {
                 if (mouseButtonEvent.ButtonIndex == MouseButton.WheelUp)
                 {
-                    CellSize += 0.5f;
-                    UpdateTransforms();
+                    multiMeshInstance.Scale *= 1.1f;
                 }
                 else if (mouseButtonEvent.ButtonIndex == MouseButton.WheelDown)
                 {
-                    CellSize -= 0.5f;
-                    if (CellSize < 0.5f) CellSize = 0.5f;
-                    
-                    UpdateTransforms();
+                    multiMeshInstance.Scale *= 0.9f;
+                    multiMeshInstance.Scale.Clamp(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f));
                 }
             }
         }
