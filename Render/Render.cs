@@ -6,15 +6,12 @@ namespace Mushroom;
 
 public partial class Render : Node2D
 {
-    [Export]
-    private float CellSize = 8.0f;
+    [Export] public float SpriteScale = 8f;
     
-    private MultiMeshInstance2D multiMeshInstance;
-    private MultiMesh multiMesh;
-    private QuadMesh quadMesh;
-    
-    private Color[] _calculatedColors;
-    private Color[] _lastAppliedColors;
+    private Sprite2D _sprite;
+    private Image _image;
+    private ImageTexture _texture;
+    private byte[] _pixelData;
     
     private int _gridWidth;
     private int _gridHeight;
@@ -22,26 +19,22 @@ public partial class Render : Node2D
 
     public void Initialize()
     {
-        multiMeshInstance = GetNode<MultiMeshInstance2D>("MultiMeshInstance2D");
-        multiMesh = multiMeshInstance.Multimesh;
-        
         _gridWidth = Grid.Size.X;
         _gridHeight = Grid.Size.Y;
         _totalCells = _gridWidth * _gridHeight;
-
-        multiMesh.InstanceCount = _totalCells;
         
-        quadMesh = multiMesh.Mesh as QuadMesh;
-        if (quadMesh != null)
-        {
-            quadMesh.Size = new Vector2(CellSize, CellSize);
-        }
+        _pixelData = new byte[_totalCells * 4]; // 4 bytes per pixel
         
-        _calculatedColors = new Color[_totalCells];
-        _lastAppliedColors = new Color[_totalCells];
+        _image = Image.CreateEmpty(_gridWidth, _gridHeight, false, Image.Format.Rgba8);
+        _texture = ImageTexture.CreateFromImage(_image);
+        
+        _sprite = GetNode<Sprite2D>("Sprite2D");
+        _sprite.Texture = _texture;
+        
+        _sprite.Centered = false;
+        _sprite.TextureFilter = TextureFilterEnum.Nearest;
 
         ResetPosition();
-        UpdateTransforms();
     }
     
     public void RenderFrame()
@@ -52,45 +45,32 @@ public partial class Render : Node2D
             int y = i / _gridWidth;
             
             var cell = Grid.Get(x, y);
-            _calculatedColors[i] = //cell.GetColor(new Vector2I(x, y));
-                cell.CachedColor;
+            Color c = cell.CachedColor;
+            
+            int byteIdx = i * 4;
+            _pixelData[byteIdx] = (byte)(c.R * 255f); // R
+            _pixelData[byteIdx + 1] = (byte)(c.G * 255f); // G
+            _pixelData[byteIdx + 2] = (byte)(c.B * 255f); // B
+            _pixelData[byteIdx + 3] = (byte)(c.A * 255f); // A
         });
         
-        for (int i = 0; i < _totalCells; i++)
-        {
-            if (_lastAppliedColors[i] != _calculatedColors[i])
-            {
-                multiMesh.SetInstanceColor(i, _calculatedColors[i]);
-                _lastAppliedColors[i] = _calculatedColors[i];
-            }
-        }
-    }
-    
-    private void UpdateTransforms()
-    {
-        if (quadMesh != null)
-            quadMesh.Size = new Vector2(CellSize, CellSize);
-
-        for (int i = 0; i < _totalCells; i++)
-        {
-            int x = i % _gridWidth;
-            int y = i / _gridWidth;
-            
-            var transform = new Transform2D(0, new Vector2(x * CellSize, y * CellSize));
-            multiMesh.SetInstanceTransform2D(i, transform);
-        }
+        _image.SetData(_gridWidth, _gridHeight, false, Image.Format.Rgba8, _pixelData);
+        _texture.Update(_image);
     }
 
     private void ResetPosition()
     {
-        CellSize = 8f;
+        _sprite.Scale = new Vector2(SpriteScale, SpriteScale);
+
         var windowSize = GetWindow().Size;
         
-        multiMeshInstance.Position = new Vector2(
-            (float)windowSize.X / _gridWidth * CellSize * 2, 
-            (float)windowSize.Y / _gridHeight * CellSize
-        );
-        UpdateTransforms();
+        float actualGridWidth = _gridWidth * SpriteScale;
+        float actualGridHeight = _gridHeight * SpriteScale;
+
+        float centerX = (windowSize.X - actualGridWidth) / 2;
+        float centerY = (windowSize.Y - actualGridHeight) / 2;
+
+        _sprite.Position = new Vector2(centerX, centerY);
     }
 
     private bool isDragging;
@@ -108,21 +88,22 @@ public partial class Render : Node2D
             
             if (mouseButtonEvent.IsPressed())
             {
+                float scaleFactor = 1f;
+
                 if (mouseButtonEvent.ButtonIndex == MouseButton.WheelUp)
-                {
-                    multiMeshInstance.Scale *= 1.1f;
-                }
+                    scaleFactor = 1.1f;
                 else if (mouseButtonEvent.ButtonIndex == MouseButton.WheelDown)
-                {
-                    multiMeshInstance.Scale *= 0.9f;
-                    multiMeshInstance.Scale.Clamp(new Vector2(0.5f, 0.5f), new Vector2(1f, 1f));
-                }
+                    scaleFactor = 0.9f;
+
+                Vector2 mousePos = mouseButtonEvent.Position;
+                _sprite.Position = mousePos - (mousePos - _sprite.Position) * scaleFactor;
+                _sprite.Scale *= scaleFactor;
             }
         }
         else if (@event is InputEventMouseMotion mouseMotionEvent)
         {
             if (isDragging)
-                multiMeshInstance.Position += mouseMotionEvent.Relative;
+                _sprite.Position += mouseMotionEvent.Relative;
         }
     }
 }
