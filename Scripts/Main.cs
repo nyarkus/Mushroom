@@ -70,31 +70,34 @@ public partial class Main : Node
 			return;
 
 		timer -= targetTimer;
-		
-		Tick++;
-		_ticksThisSecond++;
-		
-		_stopwatch.Restart();
-		Logic.Calculate();
-		
-		if (_hud.WeatherEnabled && Tick >= WeatherTick)
-		{
-			if (Tick % 6 == 0)
-			{
-				Weather.Rain();
-				RainTicks++;
-			}
 
-			if (RainTicks >= 100)
+		if (!_hud.IsSimulationPaused)
+		{
+			Tick++;
+			_ticksThisSecond++;
+		
+			_stopwatch.Restart();
+			Logic.Calculate();
+		
+			if (_hud.WeatherEnabled && Tick >= WeatherTick)
 			{
-				WeatherTick = Tick + _rand.Next(150, 5000);
-				RainTicks = 0;
+				if (Tick % 6 == 0)
+				{
+					Weather.Rain();
+					RainTicks++;
+				}
+
+				if (RainTicks >= 100)
+				{
+					WeatherTick = Tick + _rand.Next(150, 5000);
+					RainTicks = 0;
+				}
 			}
+			_logicTimeAccumulator += _stopwatch.Elapsed.TotalMilliseconds;	
 		}
-		_logicTimeAccumulator += _stopwatch.Elapsed.TotalMilliseconds;
 		
 		_stopwatch.Restart();
-		_render.Call("RenderFrame");
+		_render.RenderFrame();
 		_renderTimeAccumulator += _stopwatch.Elapsed.TotalMilliseconds;
 		
 		_hud.Info.Text = $"Logic Time: {_displayLogicTime:F1} ms\n" +

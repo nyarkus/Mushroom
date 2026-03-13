@@ -9,6 +9,7 @@ public partial class Hud : Control
     public bool WeatherEnabled { get; set; } = true;
     public double SimulationFPS { get; set; } = 5;
     public bool IsFpsLimitDisabled { get; set; }
+    public bool IsSimulationPaused { get; set; }
 
     public override void _Ready()
     {
@@ -27,4 +28,7 @@ public partial class Hud : Control
 
     public void _OnFpsLimitToggle(bool toggle)
         => IsFpsLimitDisabled = toggle;
+
+    public void _OnPauseSimulation(bool toggle)
+        => IsSimulationPaused = toggle;
 }
