@@ -32,21 +32,24 @@ public class Spore : CellBase
             {
                 if (Raycast.Cast(position + new Vector2I(0, -1), new Vector2I(0, -1)).IsHit)
                     return () =>
-                        Grid.Set(position, Air.Instance);
+                        Grid.Set(position, new RottingMatter() { BecomeAir = true } );
                 
                 bool isTooClose = false;
                 for (int x = -2; x <= 2; x++)
                 {
                     var checkPos = new Vector2I(position.X + x, position.Y + 1);
-                    if (Grid.Get(checkPos) is Mycelium) isTooClose = true;
+                    if (Grid.Get(checkPos) is Mycelium)
+                        isTooClose = true;
+                    
                     
                     var checkPosStalk = new Vector2I(position.X + x, position.Y);
-                    if (Grid.Get(checkPosStalk) is Stalk) isTooClose = true;
+                    if (Grid.Get(checkPosStalk) is Stalk)
+                        isTooClose = true;
                 }
 
                 if (isTooClose)
                     return () =>
-                        Grid.Set(position, Air.Instance);
+                        Grid.Set(position, new RottingMatter() { BecomeAir = true } );
                 
                 return () =>
                 {
