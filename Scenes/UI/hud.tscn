@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://by3ny6m78nxtd"]
+[gd_scene format=3 uid="uid://by3ny6m78nxtd"]
 
-[ext_resource type="Script" uid="uid://k5iq43muue44" path="res://UI/Hud.cs" id="1_ne75i"]
+[ext_resource type="Script" uid="uid://k5iq43muue44" path="res://Scripts/UI/Hud.cs" id="1_ne75i"]
+[ext_resource type="Script" uid="uid://chy38uoir56ft" path="res://Scripts/UI/CellList.cs" id="2_ny26j"]
 
-[node name="Hud" type="Control"]
+[node name="Hud" type="Control" unique_id=982227952]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ne75i")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=455384725]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,65 +21,73 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 2
 
-[node name="Panel" type="Panel" parent="VBoxContainer"]
+[node name="Panel" type="Panel" parent="VBoxContainer" unique_id=1125743028]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer/Panel"]
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer/Panel" unique_id=697680423]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 current_tab = 1
 
-[node name="Simulation" type="TabBar" parent="VBoxContainer/Panel/TabContainer"]
+[node name="Simulation" type="TabBar" parent="VBoxContainer/Panel/TabContainer" unique_id=648979962]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Panel/TabContainer/Simulation"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/Panel/TabContainer/Simulation" unique_id=1447670838]
 layout_mode = 0
 offset_right = 1152.0
 offset_bottom = 119.0
 
-[node name="Info" type="RichTextLabel" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer"]
+[node name="Info" type="RichTextLabel" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer" unique_id=1331988739]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Tick:"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer" unique_id=1877603093]
 layout_mode = 2
 
-[node name="Weather" type="CheckButton" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer"]
+[node name="Weather" type="CheckButton" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer" unique_id=605061723]
 layout_mode = 2
 button_pressed = true
 text = "Enable weather"
 
-[node name="FPS" type="Label" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer"]
+[node name="FPS" type="Label" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer" unique_id=116655031]
 layout_mode = 2
 text = "Simulation FPS: 5"
 horizontal_alignment = 1
 
-[node name="SimulationFPS" type="HSlider" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer"]
+[node name="SimulationFPS" type="HSlider" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer" unique_id=409709007]
 layout_mode = 2
 min_value = 1.0
 max_value = 120.0
 value = 5.0
 
-[node name="Create" type="TabBar" parent="VBoxContainer/Panel/TabContainer"]
+[node name="Create" type="TabBar" parent="VBoxContainer/Panel/TabContainer" unique_id=1094883431]
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer/Panel/TabContainer/Create"]
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer/Panel/TabContainer/Create" unique_id=942497500]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="ItemList" type="ItemList" parent="VBoxContainer/Panel/TabContainer/Create/HSplitContainer"]
+[node name="ItemList" type="ItemList" parent="VBoxContainer/Panel/TabContainer/Create/HSplitContainer" unique_id=1728286253]
 layout_mode = 2
-item_count = 1
-item_0/text = "Water"
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+theme_override_constants/line_separation = 4
+max_columns = 10
+same_column_width = true
+script = ExtResource("2_ny26j")
 
 [connection signal="toggled" from="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer/Weather" to="." method="OnWeatherToggled"]
 [connection signal="value_changed" from="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer/SimulationFPS" to="." method="SimulationFPSChanged"]

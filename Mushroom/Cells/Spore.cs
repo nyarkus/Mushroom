@@ -106,7 +106,8 @@ public class Spore : CellBase
     }
 
     public override Color GetColor(Vector2I position)
-        => new Color(0.97f, 0.97f, 0.97f);
+        => GetUiColor();
 
-    public char Symbol { get; } = '~';
+    public override Color GetUiColor()
+        => new Color(0.97f, 0.97f, 0.97f);
 }

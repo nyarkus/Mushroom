@@ -64,7 +64,9 @@ public class RottingMatter : CellBase
         return () => _age++;
     }
 
-    public override Color GetColor(Vector2I pos) => new Color(0.15f, 0.13f, 0.11f);
+    public override Color GetColor(Vector2I pos) 
+        => GetUiColor();
 
-    public char Symbol { get; } = 'H';
+    public override Color GetUiColor()
+        => new Color(0.15f, 0.13f, 0.11f);
 }

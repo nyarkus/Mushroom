@@ -207,5 +207,7 @@ public class Mycelium : CellBase
         return new Color(0.81f, 0.81f, 0.81f);
     }
 
-    public char Symbol { get; } = '#';
+    public override Color GetUiColor()
+        => new Color(0.72f, 0.72f, 0.72f);
+    
 }

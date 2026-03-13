@@ -49,5 +49,6 @@ public class Sand : CellBase
     public override Color GetColor(Vector2I position)
         => IsWet ? new Color(0.67f, 0.68f, 0.23f) : new Color(0.86f, 0.87f, 0.3f);
 
-    public char Symbol { get; } = '#';
+    public override Color GetUiColor()
+        => new Color(0.86f, 0.87f, 0.3f);
 }

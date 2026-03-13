@@ -4,4 +4,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>13</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="3.0.10" />
+  </ItemGroup>
 </Project>

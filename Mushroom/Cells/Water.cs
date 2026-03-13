@@ -135,5 +135,6 @@ public class Water : CellBase
         return baseColor;
     }
 
-    public char Symbol { get; } = '~';
+    public override Color GetUiColor()
+        => new Color(0.33f, 0.66f, 0.9f);
 }

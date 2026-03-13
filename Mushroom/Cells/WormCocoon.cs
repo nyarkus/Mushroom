@@ -31,7 +31,8 @@ public class WormCocoon : CellBase
     }
 
     public override Color GetColor(Vector2I vector2)
-        => new Color(0.89f, 0.89f, 0.8f);
+        => GetUiColor();
 
-    public char Symbol { get; } = '*';
+    public override Color GetUiColor()
+        => new Color(0.89f, 0.89f, 0.8f);
 }

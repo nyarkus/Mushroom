@@ -103,4 +103,9 @@ public class Dirt : CellBase
         float t = Math.Clamp(Dampness / MAX_DAMPNESS, 0.0f, 1.0f);
         return DRY_COLOR.Lerp(WET_COLOR, t);
     }
+
+    public override Color GetUiColor()
+    {
+        return DRY_COLOR.Lerp(WET_COLOR, 0.5f);
+    }
 }
