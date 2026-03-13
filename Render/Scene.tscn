@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c2xln35ycj64a" path="res://Render/Render.cs" id="1_ss0vo"]
 
-[node name="Render" type="Node2D" unique_id=587467266]
+[node name="Render" type="Node2D" unique_id=587467266 node_paths=PackedStringArray("RenderSprite")]
 script = ExtResource("1_ss0vo")
+RenderSprite = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=2117842576]

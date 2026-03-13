@@ -1,12 +1,22 @@
-[gd_scene load_steps=4 format=3 uid="uid://kyw57senewjl"]
+[gd_scene format=3 uid="uid://kyw57senewjl"]
 
 [ext_resource type="Script" uid="uid://c82nwui4rw6aq" path="res://Main.cs" id="1_wbfu4"]
 [ext_resource type="PackedScene" uid="uid://op7fd4d4nyto" path="res://Render/Scene.tscn" id="2_xkndl"]
 [ext_resource type="PackedScene" uid="uid://by3ny6m78nxtd" path="res://UI/hud.tscn" id="3_u44n3"]
+[ext_resource type="Script" uid="uid://b30slavrp44mn" path="res://Controls/MouseHandler.cs" id="4_sb48q"]
+[ext_resource type="Script" uid="uid://ctkj7jfctgub5" path="res://Controls/Camera2d.cs" id="5_t88pq"]
 
-[node name="Game" type="Node"]
+[node name="Game" type="Node" unique_id=79431601]
 script = ExtResource("1_wbfu4")
 
-[node name="Render" parent="." instance=ExtResource("2_xkndl")]
+[node name="Render" parent="." unique_id=47088248 instance=ExtResource("2_xkndl")]
 
-[node name="Hud" parent="." instance=ExtResource("3_u44n3")]
+[node name="MouseHandler" type="Node" parent="." unique_id=1162681938]
+script = ExtResource("4_sb48q")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=474369312]
+
+[node name="Hud" parent="CanvasLayer" unique_id=801583774 instance=ExtResource("3_u44n3")]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=260918874]
+script = ExtResource("5_t88pq")

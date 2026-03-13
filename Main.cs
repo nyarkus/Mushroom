@@ -38,10 +38,9 @@ public partial class Main : Node
 	{
 		GD.Print("Setup render...");
 		_render = GetNode<Render>("Render");
-		_render.Initialize();
 		
 		GD.Print("Setup hud...");
-		_hud = GetNode<Hud>("Hud");
+		_hud = GetNode<Hud>("CanvasLayer/Hud");
 	}
 
 	public override void _Process(double delta)

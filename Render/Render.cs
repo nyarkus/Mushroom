@@ -1,14 +1,16 @@
 using System.Threading.Tasks;
 using Godot;
+using Mushroom.Ceils;
 using Mushroom.Data;
 
 namespace Mushroom;
 
 public partial class Render : Node2D
 {
-    [Export] public float SpriteScale = 8f;
+    public static Render Instance { get; private set; }
     
-    private Sprite2D _sprite;
+    [Export] public Sprite2D RenderSprite;
+    
     private Image _image;
     private ImageTexture _texture;
     private byte[] _pixelData;
@@ -17,7 +19,7 @@ public partial class Render : Node2D
     private int _gridHeight;
     private int _totalCells;
 
-    public void Initialize()
+    public override void _Ready()
     {
         _gridWidth = Grid.Size.X;
         _gridHeight = Grid.Size.Y;
@@ -28,13 +30,12 @@ public partial class Render : Node2D
         _image = Image.CreateEmpty(_gridWidth, _gridHeight, false, Image.Format.Rgba8);
         _texture = ImageTexture.CreateFromImage(_image);
         
-        _sprite = GetNode<Sprite2D>("Sprite2D");
-        _sprite.Texture = _texture;
+        RenderSprite.Texture = _texture;
         
-        _sprite.Centered = false;
-        _sprite.TextureFilter = TextureFilterEnum.Nearest;
+        RenderSprite.Centered = false;
+        RenderSprite.TextureFilter = TextureFilterEnum.Nearest;
 
-        ResetPosition();
+        Instance = this;
     }
     
     public void RenderFrame()
@@ -58,52 +59,5 @@ public partial class Render : Node2D
         _texture.Update(_image);
     }
 
-    private void ResetPosition()
-    {
-        _sprite.Scale = new Vector2(SpriteScale, SpriteScale);
-
-        var windowSize = GetWindow().Size;
-        
-        float actualGridWidth = _gridWidth * SpriteScale;
-        float actualGridHeight = _gridHeight * SpriteScale;
-
-        float centerX = (windowSize.X - actualGridWidth) / 2;
-        float centerY = (windowSize.Y - actualGridHeight) / 2;
-
-        _sprite.Position = new Vector2(centerX, centerY);
-    }
-
-    private bool isDragging;
     
-    public override void _Input(InputEvent @event)
-    {
-        if (@event is InputEventMouseButton mouseButtonEvent)
-        {
-            if (mouseButtonEvent.ButtonIndex == MouseButton.Right)
-            {
-                isDragging = mouseButtonEvent.IsPressed();
-                if (mouseButtonEvent.IsDoubleClick())
-                    ResetPosition();
-            }
-            
-            if (mouseButtonEvent.IsPressed())
-            {
-                float scaleFactor = 1f;
-
-                if (mouseButtonEvent.ButtonIndex == MouseButton.WheelUp)
-                    scaleFactor = 1.1f;
-                else if (mouseButtonEvent.ButtonIndex == MouseButton.WheelDown)
-                    scaleFactor = 0.9f;
-
-                Vector2 mousePos = mouseButtonEvent.Position;
-                _sprite.Position = mousePos - (mousePos - _sprite.Position) * scaleFactor;
-                _sprite.Scale *= scaleFactor;
-            }
-        }
-        else if (@event is InputEventMouseMotion mouseMotionEvent)
-        {
-            if (isDragging)
-                _sprite.Position += mouseMotionEvent.Relative;
-        }
-    }
 }
