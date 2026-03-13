@@ -5,22 +5,14 @@ using Mushroom.Data;
 
 public partial class CellSpawner : Node
 {
-	private CellBase _selectedCell;
+	private Type _selectedCell;
 	public void _OnCellSelected(int index)
 	{
 		var cellType = CellList.Cells[index];
 		
 		GD.Print($"{cellType.Name} selected");
-		
-		object obj = Activator.CreateInstance(cellType);
 
-		if (obj is not CellBase cell)
-		{
-			GD.Print($"obj is not CellBase. index: {index}");
-			return;
-		}
-
-		_selectedCell = cell;
+		_selectedCell = cellType;
 	}
 
 	public void _OnGridClick(Vector2I position)
@@ -31,7 +23,15 @@ public partial class CellSpawner : Node
 			return;
 		}
 		
-		Grid.Set(position, _selectedCell);
+		object obj = Activator.CreateInstance(_selectedCell);
+
+		if (obj is not CellBase cell)
+		{
+			GD.Print($"obj is not CellBase. index: {_selectedCell}");
+			return;
+		}
+		
+		Grid.Set(position, cell);
 	}
 	
 	
