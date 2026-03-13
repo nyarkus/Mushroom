@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://c82nwui4rw6aq" path="res://Scripts/Main.cs" id="1_b2bpf"]
 [ext_resource type="PackedScene" uid="uid://op7fd4d4nyto" path="res://Scenes/Render.tscn" id="2_7lihs"]
-[ext_resource type="Script" uid="uid://b30slavrp44mn" path="res://Scripts/MouseHandler.cs" id="3_fgofq"]
 [ext_resource type="PackedScene" uid="uid://by3ny6m78nxtd" path="res://Scenes/UI/hud.tscn" id="4_2irst"]
 [ext_resource type="Script" uid="uid://ctkj7jfctgub5" path="res://Scripts/CameraController.cs" id="5_bf53h"]
 
@@ -10,9 +9,6 @@
 script = ExtResource("1_b2bpf")
 
 [node name="Render" parent="." unique_id=47088248 instance=ExtResource("2_7lihs")]
-
-[node name="MouseHandler" type="Node" parent="." unique_id=1162681938]
-script = ExtResource("3_fgofq")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=474369312]
 
