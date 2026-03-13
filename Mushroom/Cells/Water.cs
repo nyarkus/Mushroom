@@ -37,7 +37,7 @@ public class Water : CellBase
         if (isAir && waterCeils < 3) 
             nextLifeTime++;
 
-        if (nextLifeTime > 1000)
+        if (nextLifeTime > 5000)
             return () => Grid.Set(position, Air.Instance);
 
         var downPosition = new Vector2I(position.X, position.Y + 1);
