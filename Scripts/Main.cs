@@ -59,7 +59,11 @@ public partial class Main : Node
 			_fpsTimer -= 1.0;
 		}
 		
-		targetTimer = 1.0 / _hud.SimulationFPS;
+		if(!_hud.IsFpsLimitDisabled)
+			targetTimer = 1.0 / _hud.SimulationFPS;
+		else
+			targetTimer = 0;
+		
 		timer += delta;
 		
 		if (timer < targetTimer)
