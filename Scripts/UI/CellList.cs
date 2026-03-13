@@ -1,11 +1,14 @@
-using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Godot;
 using Humanizer;
 using Mushroom.Ceils;
 using Mushroom.Data;
+using Mushroom.Mushroom.Data;
+
+namespace Mushroom.UI;
 
 public partial class CellList : ItemList
 {
@@ -25,6 +28,7 @@ public partial class CellList : ItemList
 			.Where(x => x.IsClass 
 			            && !x.IsAbstract 
 			            && x.IsSubclassOf(typeof(CellBase))
+			            && x.GetCustomAttribute(typeof(SpawnableAttribute)) != null
 			            && x.GetConstructor(Type.EmptyTypes) != null)
 			.ToList();
 
@@ -64,5 +68,3 @@ public partial class CellList : ItemList
 	
 	private record CellInfo(ImageTexture Icon, Type Type);
 }
-
-
