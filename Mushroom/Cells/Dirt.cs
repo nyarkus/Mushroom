@@ -50,15 +50,20 @@ public class Dirt : CellBase
         {
             var neighborCell = Grid.GetNeighbor(vector2, dir);
             
-            if (dir == Direction.Up && neighborCell is Air && nextDampness > MinDampness)
+            if (dir == Direction.Up)
             {
-                nextIsGrass = true;
-                
-                float evapMulti = Dampness > RetentionCapacity ? 1.0f : 0.2f;
-                currentDampnessChange -= EvaporationRate * evapMulti;
-                
-                if (Random.Shared.NextDouble() < 0.001) 
-                    currentNutrientChange += 0.01f;
+                if (neighborCell is Air && nextDampness > MinDampness)
+                {
+                    nextIsGrass = true;
+
+                    float evapMulti = Dampness > RetentionCapacity ? 1.0f : 0.2f;
+                    currentDampnessChange -= EvaporationRate * evapMulti;
+
+                    if (Random.Shared.NextDouble() < 0.001)
+                        currentNutrientChange += 0.01f;
+                }
+                else
+                    nextIsGrass = false;
             }
             
             if (neighborCell is Dirt dirtNeighbor)
