@@ -2,7 +2,7 @@ using Godot;
 
 namespace Mushroom.Controls;
 
-public partial class Camera2d : Camera2D
+public partial class CameraController : Camera2D
 {
     [Export] public float DefaultZoom = 8f;
     private bool isDragging;

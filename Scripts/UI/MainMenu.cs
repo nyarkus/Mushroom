@@ -45,7 +45,7 @@ public partial class MainMenu : Control
         _ = Task.Run(() =>
         {
             Generator.Generate(worldSize, 0, (int)_seed.Value);
-            var game = ResourceLoader.Load<PackedScene>("res://Game.tscn").Instantiate();
+            var game = ResourceLoader.Load<PackedScene>("res://Scenes/Game.tscn").Instantiate();
             GetTree().Root.CallDeferred(Node.MethodName.AddChild, game);
             
             QueueFree();
