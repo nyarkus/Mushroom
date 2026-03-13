@@ -11,6 +11,14 @@ public class WormCocoon : CellBase
     private int _ticks = 0;
     public override Action? Do(Vector2I vector2)
     {
+        if (_ticks > 500)
+        {
+            return () =>
+            {
+                Grid.Set(vector2, new RottingMatter());
+            };
+        }
+        
         if (_ticks >= 350)
         {
             var length = Random.Shared.Next(2, 5);
@@ -26,14 +34,6 @@ public class WormCocoon : CellBase
             {
                 Grid.Set(vector2, new Dirt());
                 Worm.Spawn(vector2, length);
-            };
-        }
-
-        if (_ticks > 500)
-        {
-            return () =>
-            {
-                Grid.Set(vector2, new RottingMatter());
             };
         }
         
