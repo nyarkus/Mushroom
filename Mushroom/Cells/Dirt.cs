@@ -23,7 +23,7 @@ public class Dirt : CellBase
     private static readonly Color GrassColor = new Color(0.27f, 0.55f, 0.25f);
     private static readonly Color DeadGrassColor = new Color(0.55f, 0.51f, 0.25f);
     private static readonly float GrassWaterConsumption = 0.00001f;
-    private static readonly int DeadGrassTicks = 10000;
+    private static readonly int DeadGrassTicks = 100;
 
     public float Dampness { get; set; } = 0.9f;
     public float Nutrients { get; set; } = 1.0f;
