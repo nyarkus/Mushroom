@@ -23,7 +23,7 @@ public class Dirt : CellBase
     private static readonly Color GrassColor = new Color(0.27f, 0.55f, 0.25f);
     private static readonly Color DeadGrassColor = new Color(0.55f, 0.51f, 0.25f);
     private static readonly float GrassWaterConsumption = 0.00001f;
-    private static readonly int DeadGrassTicks = 100;
+    private static readonly int DeadGrassTicks = 1000;
 
     public float Dampness { get; set; } = 0.9f;
     public float Nutrients { get; set; } = 1.0f;
@@ -114,10 +114,13 @@ public class Dirt : CellBase
                 if (_isGrass && Grid.GetNeighbor(vector2, Direction.Down) is Dirt dirt && dirt.Dampness > MinDampness)
                 {
                     dirt.Dampness -= GrassWaterConsumption;
-                    _ticksWithoutWater--;
+                    if(_ticksWithoutWater > 0)
+                        _ticksWithoutWater--;
                 }
                 else
                     _ticksWithoutWater++;
+                
+                _ticksWithoutWater = Mathf.Clamp(_ticksWithoutWater, -DeadGrassTicks / 2, DeadGrassTicks);
             };
         }
         
@@ -132,6 +135,8 @@ public class Dirt : CellBase
             }
             else
                 _ticksWithoutWater++;
+            
+            _ticksWithoutWater = Mathf.Clamp(_ticksWithoutWater, -DeadGrassTicks / 2, DeadGrassTicks);
         };
     }
 
@@ -140,7 +145,7 @@ public class Dirt : CellBase
         if (_isGrass)
         {
             float k = Math.Clamp(_ticksWithoutWater / (float)DeadGrassTicks, 0f, 1f);
-            return GrassColor.Lerp(WetColor, k);
+            return GrassColor.Lerp(DeadGrassColor, k);
         }
         float t = Math.Clamp(Dampness / MaxDampness, 0f, 1f);
         return DryColor.Lerp(WetColor, t);
