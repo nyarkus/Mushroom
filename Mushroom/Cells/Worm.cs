@@ -40,6 +40,13 @@ public class Worm : CellBase
             }
             nextPositions = validSegments.ToArray();
         }
+        else
+        {
+            return () =>
+            {
+                Grid.Set(headPos, new RottingMatter());
+            };
+        }
         
         if (Age >= TargetLifeTime)
             return () => { positions = nextPositions; Grid.Set(headPos, new RottingMatter()); };
