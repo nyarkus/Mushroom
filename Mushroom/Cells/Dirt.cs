@@ -62,7 +62,7 @@ public class Dirt : CellBase
                     if (Random.Shared.NextDouble() < 0.001)
                         currentNutrientChange += 0.01f;
                 }
-                else
+                else if(neighborCell is not Air)
                     nextIsGrass = false;
             }
             
