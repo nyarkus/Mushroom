@@ -45,7 +45,7 @@ public partial class CameraController : Camera2D
         else if (@event is InputEventMouseMotion mouseMotionEvent)
         {
             if (isDragging)
-                Position -= mouseMotionEvent.Relative;
+                Position -= mouseMotionEvent.Relative * 0.1f;
             
             if (Input.IsMouseButtonPressed(MouseButton.Left))
             {
