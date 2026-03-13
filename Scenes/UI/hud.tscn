@@ -62,7 +62,7 @@ horizontal_alignment = 1
 [node name="SimulationFPS" type="HSlider" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer" unique_id=409709007]
 layout_mode = 2
 min_value = 1.0
-max_value = 240.0
+max_value = 120.0
 value = 5.0
 
 [node name="Pause" type="CheckButton" parent="VBoxContainer/Panel/TabContainer/Simulation/HBoxContainer/VBoxContainer" unique_id=1499552085]
