@@ -20,13 +20,15 @@ public class RottingMatter : CellBase
             return () => Grid.Move(pos, downPos);
         }
         
-        if (_age > 500)
+        if (_age > 1000)
         {
             if (BecomeAir)
             {
                 return () =>
                 {
-                    if(Grid.Get(downPos) is Dirt dirt)
+                    var result = Raycast.Cast(pos, new Vector2I(0, 1), 10, [typeof(RottingMatter)]);
+                    GD.Print(result.Cell.GetType().FullName);
+                    if(result.Cell is Dirt dirt)
                         dirt.Nutrients = Math.Clamp(dirt.Nutrients + 0.3f, 0f, 1f);
                     Grid.Set(pos, Air.Instance);
                 };
