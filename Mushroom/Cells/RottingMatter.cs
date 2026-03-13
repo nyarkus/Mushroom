@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Mushroom.Data;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class RottingMatter : CellBase
 {
     public bool BecomeAir { get; set; }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Mushroom.Data;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class Dirt : CellBase
 {
     private const float MAX_DAMPNESS = 1.0f;

@@ -1,14 +1,15 @@
-using Godot;
 using System;
-using Mushroom;
+using Godot;
 using Mushroom.Data;
+
+namespace Mushroom;
 
 public partial class CellSpawner : Node
 {
 	private Type _selectedCell;
 	public void _OnCellSelected(int index)
 	{
-		var cellType = CellList.Cells[index];
+		var cellType = UI.CellList.Cells[index];
 		
 		GD.Print($"{cellType.Name} selected");
 

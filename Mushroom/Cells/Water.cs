@@ -1,9 +1,11 @@
 using System;
 using Mushroom.Data;
 using Godot;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class Water : CellBase
 {
     private int lifeTime = 0;
