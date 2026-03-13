@@ -28,6 +28,14 @@ public class WormCocoon : CellBase
                 Worm.Spawn(vector2, length);
             };
         }
+
+        if (_ticks > 500)
+        {
+            return () =>
+            {
+                Grid.Set(vector2, new RottingMatter());
+            };
+        }
         
         return () => _ticks++;
     }
