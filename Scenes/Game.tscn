@@ -3,8 +3,9 @@
 [ext_resource type="Script" uid="uid://c82nwui4rw6aq" path="res://Scripts/Main.cs" id="1_b2bpf"]
 [ext_resource type="PackedScene" uid="uid://op7fd4d4nyto" path="res://Scenes/Render.tscn" id="2_7lihs"]
 [ext_resource type="PackedScene" uid="uid://by3ny6m78nxtd" path="res://Scenes/UI/hud.tscn" id="4_2irst"]
-[ext_resource type="Script" path="res://Scripts/GridMouseHandler.cs" id="5_b2bpf"]
+[ext_resource type="Script" uid="uid://c6rvatg7648yn" path="res://Scripts/GridMouseHandler.cs" id="5_b2bpf"]
 [ext_resource type="Script" uid="uid://ctkj7jfctgub5" path="res://Scripts/CameraController.cs" id="5_bf53h"]
+[ext_resource type="Script" uid="uid://cjo0r8qaon8c8" path="res://Scripts/CellSpawner.cs" id="6_7lihs"]
 
 [node name="Game" type="Node" unique_id=79431601]
 script = ExtResource("1_b2bpf")
@@ -20,3 +21,11 @@ script = ExtResource("5_bf53h")
 
 [node name="GridMouseHandler" type="Node" parent="." unique_id=1094294202]
 script = ExtResource("5_b2bpf")
+
+[node name="CellSpawner" type="Node" parent="." unique_id=1372562423]
+script = ExtResource("6_7lihs")
+
+[connection signal="CellSelected" from="CanvasLayer/Hud/VBoxContainer/Panel/TabContainer/Create/HSplitContainer/ItemList" to="CellSpawner" method="_OnCellSelected"]
+[connection signal="GridClick" from="GridMouseHandler" to="CellSpawner" method="_OnGridClick"]
+
+[editable path="CanvasLayer/Hud"]

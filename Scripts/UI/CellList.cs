@@ -10,8 +10,13 @@ using Mushroom.Data;
 public partial class CellList : ItemList
 {
 	[Export] public int IconSize = 8;
+
+	[Signal] public delegate void CellSelectedEventHandler(int index);
 	
 	private Dictionary<string, CellInfo> _cells = new();
+
+	public static Dictionary<int, Type> Cells = new();
+	
 	public override void _Ready()
 	{
 		var assembly = typeof(Air).Assembly;
@@ -36,8 +41,17 @@ public partial class CellList : ItemList
 			var icon = CreateIcon(color);
 			_cells[cell.Name.Humanize(LetterCasing.Title)] = new CellInfo(icon, cell);
 			
-			AddItem(cell.Name.Humanize(LetterCasing.Title), icon);
+			int index = AddItem(cell.Name.Humanize(LetterCasing.Title), icon);
+
+			Cells[index] = cell;
 		}
+	}
+	
+	// It's kinda wierd but maybe in the future godot api changes something idk
+	public void _OnItemSelected(int index)
+	{
+		GD.Print("Selected " + index);
+		EmitSignalCellSelected(index);
 	}
 
 	private ImageTexture CreateIcon(Color color)
