@@ -18,6 +18,7 @@ config/name="Mushroom"
 config/tags=PackedStringArray("2d", "simulation")
 run/main_scene="uid://bbhy48k4w7bk4"
 config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
+config/icon="uid://t1rv7x1k3ak1"
 
 [display]
 
