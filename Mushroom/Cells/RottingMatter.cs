@@ -13,7 +13,7 @@ public class RottingMatter : CellBase
     public override Action? Do(Vector2I pos)
     {
         var downPos = pos + new Vector2I(0, 1);
-        if (Grid.IsInBounds(downPos) && Grid.Get(downPos) is Air)
+        if (Grid.Get(downPos) is Air)
         {
             _age++;
             BecomeAir = true;
