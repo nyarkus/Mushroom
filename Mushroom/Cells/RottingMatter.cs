@@ -20,7 +20,7 @@ public class RottingMatter : CellBase
             return () => Grid.Move(pos, downPos);
         }
         
-        if (_age > 1000)
+        if (_age > 500)
         {
             if (BecomeAir)
             {
