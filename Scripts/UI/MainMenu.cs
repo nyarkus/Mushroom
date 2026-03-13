@@ -22,6 +22,8 @@ public partial class MainMenu : Control
         
         _loading = GetNode<Control>("CenterContainer/Loading");
         _progressBar = GetNode<ProgressBar>("CenterContainer/Loading/ProgressBar");
+
+        _seed.Value = GD.Randi();
     }
     public void Generate()
     {
