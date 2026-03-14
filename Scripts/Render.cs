@@ -42,10 +42,7 @@ public partial class Render : Node2D
     {
         Parallel.For(0, _totalCells, i =>
         {
-            int x = i % _gridWidth;
-            int y = i / _gridWidth;
-            
-            var cell = Grid.Get(x, y);
+            var cell = Grid.GetRaw(i);
             Color c = cell.CachedColor;
             
             int byteIdx = i * 4;

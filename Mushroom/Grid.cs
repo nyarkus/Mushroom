@@ -36,6 +36,9 @@ public static class Grid
         return Air.Instance;
     }
 
+    public static CellBase GetRaw(int index)
+        => _cells[index];
+
     public static void Move(Vector2I from, Vector2I to)
     {
         var target = Get(from.X, from.Y);
