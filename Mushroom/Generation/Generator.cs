@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using Mushroom.Ceils;
+using Mushroom.Cells.Organics;
 using Mushroom.Data;
 
 namespace Mushroom.Generation;
@@ -50,7 +51,8 @@ public static class Generator
                 
                 if (y == currentGroundLevel && x == myceliumX)
                 {
-                    Grid.Set(x, y, new Mycelium() { Main = true });
+                    //Grid.Set(x, y, new Mycelium() { Main = true });
+                    Grid.Set(x, y, new RootCollar() { Water = 1f, Energy = 1f, RootLength = 4, Type = RootCollar.RootType.Taproot });
                     continue;
                 }
 
