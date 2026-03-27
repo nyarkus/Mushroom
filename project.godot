@@ -15,9 +15,17 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Mushroom"
+config/version="2.0"
 config/tags=PackedStringArray("2d", "simulation")
 run/main_scene="uid://bbhy48k4w7bk4"
 config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
+boot_splash/show_image=false
+boot_splash/use_filter=false
+config/icon="uid://t1rv7x1k3ak1"
+
+[display]
+
+window/vsync/vsync_mode=0
 
 [dotnet]
 
@@ -25,6 +33,4 @@ project/assembly_name="Mushroom"
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)

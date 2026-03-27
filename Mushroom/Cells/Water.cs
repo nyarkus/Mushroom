@@ -1,9 +1,11 @@
 using System;
 using Mushroom.Data;
 using Godot;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class Water : CellBase
 {
     private int lifeTime = 0;
@@ -37,7 +39,7 @@ public class Water : CellBase
         if (isAir && waterCeils < 3) 
             nextLifeTime++;
 
-        if (nextLifeTime > 300)
+        if (nextLifeTime > 5000)
             return () => Grid.Set(position, Air.Instance);
 
         var downPosition = new Vector2I(position.X, position.Y + 1);
@@ -135,5 +137,6 @@ public class Water : CellBase
         return baseColor;
     }
 
-    public char Symbol { get; } = '~';
+    public override Color GetUiColor()
+        => new Color(0.33f, 0.66f, 0.9f);
 }

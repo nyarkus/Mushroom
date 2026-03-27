@@ -1,9 +1,11 @@
 using System;
 using Mushroom.Data;
 using Godot;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class Spore : CellBase
 {
     private int _ticksOnDirt = 0;
@@ -32,21 +34,24 @@ public class Spore : CellBase
             {
                 if (Raycast.Cast(position + new Vector2I(0, -1), new Vector2I(0, -1)).IsHit)
                     return () =>
-                        Grid.Set(position, Air.Instance);
+                        Grid.Set(position, new RottingMatter() { BecomeAir = true } );
                 
                 bool isTooClose = false;
                 for (int x = -2; x <= 2; x++)
                 {
                     var checkPos = new Vector2I(position.X + x, position.Y + 1);
-                    if (Grid.Get(checkPos) is Mycelium) isTooClose = true;
+                    if (Grid.Get(checkPos) is Mycelium)
+                        isTooClose = true;
+                    
                     
                     var checkPosStalk = new Vector2I(position.X + x, position.Y);
-                    if (Grid.Get(checkPosStalk) is Stalk) isTooClose = true;
+                    if (Grid.Get(checkPosStalk) is Stalk)
+                        isTooClose = true;
                 }
 
                 if (isTooClose)
                     return () =>
-                        Grid.Set(position, Air.Instance);
+                        Grid.Set(position, new RottingMatter() { BecomeAir = true } );
                 
                 return () =>
                 {
@@ -106,7 +111,8 @@ public class Spore : CellBase
     }
 
     public override Color GetColor(Vector2I position)
-        => new Color(0.97f, 0.97f, 0.97f);
+        => GetUiColor();
 
-    public char Symbol { get; } = '~';
+    public override Color GetUiColor()
+        => new Color(0.97f, 0.97f, 0.97f);
 }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using Mushroom.Data;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class RottingMatter : CellBase
 {
     public bool BecomeAir { get; set; }
@@ -13,7 +15,7 @@ public class RottingMatter : CellBase
     public override Action? Do(Vector2I pos)
     {
         var downPos = pos + new Vector2I(0, 1);
-        if (Grid.IsInBounds(downPos) && Grid.Get(downPos) is Air)
+        if (Grid.Get(downPos) is Air)
         {
             _age++;
             BecomeAir = true;
@@ -26,7 +28,9 @@ public class RottingMatter : CellBase
             {
                 return () =>
                 {
-                    if(Grid.Get(downPos) is Dirt dirt)
+                    var result = Raycast.Cast(pos, new Vector2I(0, 1), 10, [typeof(RottingMatter)]);
+                    GD.Print(result.Cell.GetType().FullName);
+                    if(result.Cell is Dirt dirt)
                         dirt.Nutrients = Math.Clamp(dirt.Nutrients + 0.3f, 0f, 1f);
                     Grid.Set(pos, Air.Instance);
                 };
@@ -64,7 +68,9 @@ public class RottingMatter : CellBase
         return () => _age++;
     }
 
-    public override Color GetColor(Vector2I pos) => new Color(0.15f, 0.13f, 0.11f);
+    public override Color GetColor(Vector2I pos) 
+        => GetUiColor();
 
-    public char Symbol { get; } = 'H';
+    public override Color GetUiColor()
+        => new Color(0.15f, 0.13f, 0.11f);
 }

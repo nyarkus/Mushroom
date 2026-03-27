@@ -15,4 +15,7 @@ public abstract class CellBase
     public void GetAndCacheColor(Vector2I position)
         => CachedColor = GetColor(position);
     public Color CachedColor { get; protected set; }
+    
+    // ui
+    public abstract Color GetUiColor();
 }

@@ -40,6 +40,13 @@ public class Worm : CellBase
             }
             nextPositions = validSegments.ToArray();
         }
+        else
+        {
+            return () =>
+            {
+                Grid.Set(headPos, new RottingMatter());
+            };
+        }
         
         if (Age >= TargetLifeTime)
             return () => { positions = nextPositions; Grid.Set(headPos, new RottingMatter()); };
@@ -276,6 +283,9 @@ public class Worm : CellBase
         worm.positions = tailPositions.ToArray();
     }
 
-    public override Color GetColor(Vector2I pos) => Main ? new Color(0.6f, 0.25f, 0.44f) : new Color(0.8f, 0.35f, 0.6f);
-    public char Symbol { get; } = '#';
+    public override Color GetColor(Vector2I pos) 
+        => Main ? new Color(0.6f, 0.25f, 0.44f) : new Color(0.8f, 0.35f, 0.6f);
+
+    public override Color GetUiColor()
+        => new Color(0.6f, 0.25f, 0.44f);
 }

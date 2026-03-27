@@ -2,6 +2,10 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <LangVersion>14</LangVersion>
+    <LangVersion>13</LangVersion>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="3.0.10" />
+  </ItemGroup>
 </Project>

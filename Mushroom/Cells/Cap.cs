@@ -129,6 +129,9 @@ public class Cap : CellBase
         return null;
     }
 
-    public override Color GetColor(Vector2I vector2) => new Color(0.3f, 0.23f, 0.1f);
-    public char Symbol { get; } = '#';
+    public override Color GetColor(Vector2I vector2) 
+        => GetUiColor();
+
+    public override Color GetUiColor()
+        => new Color(0.3f, 0.23f, 0.1f);
 }

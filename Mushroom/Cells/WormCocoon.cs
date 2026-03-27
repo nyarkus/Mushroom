@@ -1,14 +1,24 @@
 using System;
 using Mushroom.Data;
 using Godot;
+using Mushroom.Mushroom.Data;
 
 namespace Mushroom.Ceils;
 
+[Spawnable]
 public class WormCocoon : CellBase
 {
     private int _ticks = 0;
     public override Action? Do(Vector2I vector2)
     {
+        if (_ticks > 500)
+        {
+            return () =>
+            {
+                Grid.Set(vector2, new RottingMatter());
+            };
+        }
+        
         if (_ticks >= 350)
         {
             var length = Random.Shared.Next(2, 5);
@@ -31,7 +41,8 @@ public class WormCocoon : CellBase
     }
 
     public override Color GetColor(Vector2I vector2)
-        => new Color(0.89f, 0.89f, 0.8f);
+        => GetUiColor();
 
-    public char Symbol { get; } = '*';
+    public override Color GetUiColor()
+        => new Color(0.89f, 0.89f, 0.8f);
 }

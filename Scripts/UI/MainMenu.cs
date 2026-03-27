@@ -22,6 +22,8 @@ public partial class MainMenu : Control
         
         _loading = GetNode<Control>("CenterContainer/Loading");
         _progressBar = GetNode<ProgressBar>("CenterContainer/Loading/ProgressBar");
+
+        _seed.Value = GD.Randi();
     }
     public void Generate()
     {
@@ -45,7 +47,7 @@ public partial class MainMenu : Control
         _ = Task.Run(() =>
         {
             Generator.Generate(worldSize, 0, (int)_seed.Value);
-            var game = ResourceLoader.Load<PackedScene>("res://Game.tscn").Instantiate();
+            var game = ResourceLoader.Load<PackedScene>("res://Scenes/Game.tscn").Instantiate();
             GetTree().Root.CallDeferred(Node.MethodName.AddChild, game);
             
             QueueFree();

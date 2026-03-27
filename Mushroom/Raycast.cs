@@ -9,7 +9,6 @@ public static class Raycast
 {
     public static RaycastResult Cast(Vector2I from, Vector2I direction, int maxDistance = 1000)
     {
-        GD.Print("Raycast call");
         for (int i = 0; i < maxDistance; i++)
         {
             Vector2I position = from + direction * i;
@@ -27,7 +26,6 @@ public static class Raycast
     
     public static RaycastResult Cast(Vector2I from, Vector2I direction, int maxDistance, params ReadOnlySpan<Type> exclude)
     {
-        GD.Print("Raycast2 call");
         for (int i = 0; i < maxDistance; i++)
         {
             Vector2I position = from + direction * i;

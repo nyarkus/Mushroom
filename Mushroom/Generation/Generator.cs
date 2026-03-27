@@ -89,6 +89,6 @@ public static class Generator
         }
         
         Worm.Spawn(new Vector2I(size.X / 2, Grid.GroundLevel), 3);
-        //Worm.Spawn(new Vector2I(size.X / 2, Grid.GroundLevel + 3), 3);
+        Logic.Calculate();
     }
 }
