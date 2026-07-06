@@ -1,13 +1,11 @@
-# Mushroom
-Super duper mushroom simulation
+![](https://img.itch.zone/aW1nLzI2MzU5MTQ2LmdpZg==/original/TRBwkH.gif)
 
+Super puper **Mushroom simulation** :o 
 
-## Rules of simulation:
+![](https://img.itch.zone/aW1nLzI2MzU5MTUwLmdpZg==/original/pN%2Bbq1.gif)
 
-- Mushroom can reproduce, and the soil contains nutrients and moisture. 
-- Mushroom grow from mycelium and reproduce by spores. 
-- Mushroom can also die from a lack of moisture or nutrients.
+Like in other sandboxes you can place some cells, which is pretty cool i guess 😎
 
-## Demo:
+![](https://img.itch.zone/aW1nLzI2MzU5MTUxLmdpZg==/original/iD1v3I.gif)
 
-![Mushroom simulation](Mushroom.gif)
+This thing has a procedural generation ~~(wow it's so unusual)~~
